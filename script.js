@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // ========== STATE ==========
     const state = {
-        currentView: 'simple',
         selectedYears: 1,
-        comparisonData: [],
         lastUpdated: new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -16,10 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         locationInput: document.getElementById('location'),
         bedroomSelect: document.getElementById('bedrooms'),
         predictBtn: document.getElementById('predict-btn'),
-        compareBtn: document.getElementById('compare-btn'),
         timeButtons: document.querySelectorAll('.time-btn'),
-        techModeBtn: document.getElementById('tech-mode'),
-        simpleModeBtn: document.getElementById('simple-mode'),
         currentRentEl: document.getElementById('current-rent'),
         projectedChangeEl: document.getElementById('projected-change'),
         affordabilityGauge: document.querySelector('.gauge-fill'),
@@ -28,13 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
         recommendationEl: document.getElementById('recommendation'),
         dataSourceEl: document.getElementById('data-source'),
         rentTrendChart: document.getElementById('rent-trend-chart'),
-        comparisonTable: document.getElementById('comparison-data'),
         currentTimeEl: document.getElementById('current-time'),
         apiStatusEl: document.getElementById('api-status'),
-        lastUpdatedEl: document.getElementById('last-updated'),
-        tipsModal: document.getElementById('tips-modal'),
-        tipsBtn: document.getElementById('tips-btn'),
-        modalCloseBtn: document.querySelector('.modal-close')
+        lastUpdatedEl: document.getElementById('last-updated')
     };
 
     // ========== INITIALIZATION ==========
@@ -44,9 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(updateClock, 1000);
         checkApiStatus();
         setupEventListeners();
-        
-        // Start in simple mode by default
-        switchToView('simple');
     }
 
     // ========== CORE FUNCTIONS ==========
@@ -74,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getRentData(location, bedrooms, years) {
         return new Promise((resolve) => {
-            // Simulate API delay
             setTimeout(() => {
                 const baseData = getBaseRentData(location);
                 const adjustedRent = adjustForBedrooms(baseData.medianRent, bedrooms);
@@ -86,8 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     trend: baseData.trend,
                     volatility: baseData.volatility,
                     projections,
-                    source: 'Census+MarketAdj',
-                    bedrooms
+                    source: 'Census+MarketAdj'
                 });
             }, 800);
         });
@@ -158,9 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update chart
         updateChart(data.current, data.projections);
-        
-        // Add to comparison data
-        addToComparisonData(data);
     }
 
     function updateChart(currentRent, projections) {
@@ -176,9 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const allValues = [currentRent, ...projections];
         const maxValue = Math.max(...allValues);
         const minValue = Math.min(...allValues);
-        const range = maxValue - minValue || 1; // Avoid division by zero
+        const range = maxValue - minValue || 1;
         
-        // Add current point
+        // Add current point (Year 0)
         addChartPoint(0, currentRent, 'Current', minValue, range, true);
         
         // Add projection points
@@ -188,25 +171,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Connect points with lines
         connectChartPoints();
+        
+        // Add year markers on x-axis
+        addYearMarkers(projections.length);
     }
 
-    function addChartPoint(xIndex, value, label, minValue, range, isCurrent = false) {
+    function addChartPoint(yearIndex, value, label, minValue, range, isCurrent = false) {
         const point = document.createElement('div');
         point.className = `chart-point ${isCurrent ? 'current-point' : ''}`;
         
         // Position calculation
-        const xPos = (xIndex / (state.selectedYears)) * 90 + 5;
-        const yPos = 100 - ((value - minValue) / range * 80);
+        const xPos = (yearIndex / state.selectedYears) * 90 + 5;
+        const yPos = 100 - ((value - minValue) / range * 90); // 90% of height
         
         point.style.left = `${xPos}%`;
         point.style.bottom = `${yPos}%`;
         elements.rentTrendChart.appendChild(point);
         
-        // Add label
+        // Add value label
         const labelEl = document.createElement('div');
         labelEl.className = 'chart-label';
         labelEl.textContent = `$${value.toLocaleString()}`;
         labelEl.style.left = `${xPos}%`;
+        labelEl.style.bottom = `${yPos + 20}%`;
         elements.rentTrendChart.appendChild(labelEl);
         
         return point;
@@ -238,10 +225,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function addYearMarkers(years) {
+        for (let i = 0; i <= years; i++) {
+            const marker = document.createElement('div');
+            marker.className = 'chart-year-marker';
+            
+            const xPos = (i / years) * 90 + 5;
+            marker.style.left = `${xPos}%`;
+            marker.textContent = i === 0 ? 'Now' : i;
+            
+            elements.rentTrendChart.appendChild(marker);
+        }
+    }
+
     function updateGauge(score) {
         elements.affordabilityGauge.style.width = `${score}%`;
         
-        // Change color based on score
         if (score > 70) {
             elements.affordabilityGauge.style.background = 
                 'linear-gradient(90deg, var(--neon-pink), var(--neon-purple))';
@@ -255,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateInsights(location) {
-        // Simulate AI-generated insights
         setTimeout(() => {
             document.getElementById('employment-insight').innerHTML = `
                 <h3>EMPLOYMENT TRENDS</h3>
@@ -272,53 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Only 1.2 months of inventory available. ${getRandomConstructionStats()}.</p>
             `;
         }, 1000);
-    }
-
-    // ========== COMPARISON FUNCTIONS ==========
-    function addToComparisonData(data) {
-        // Check if location already exists
-        const existingIndex = state.comparisonData.findIndex(item => 
-            item.location.toLowerCase() === data.location.toLowerCase()
-        );
-        
-        if (existingIndex >= 0) {
-            state.comparisonData[existingIndex] = data;
-        } else {
-            state.comparisonData.push(data);
-        }
-        
-        updateComparisonTable();
-    }
-
-    function updateComparisonTable() {
-        elements.comparisonTable.innerHTML = '';
-        
-        state.comparisonData.forEach(data => {
-            const row = document.createElement('tr');
-            
-            // Location cell
-            const locationCell = document.createElement('td');
-            locationCell.textContent = data.location;
-            row.appendChild(locationCell);
-            
-            // Current rent cell
-            const currentCell = document.createElement('td');
-            currentCell.textContent = `$${data.current.toLocaleString()}`;
-            row.appendChild(currentCell);
-            
-            // Projection cells (1YR, 3YR, 5YR)
-            [0, 2, 4].forEach(yearIndex => {
-                const projCell = document.createElement('td');
-                if (data.projections.length > yearIndex) {
-                    projCell.textContent = `$${data.projections[yearIndex].toLocaleString()}`;
-                } else {
-                    projCell.textContent = '--';
-                }
-                row.appendChild(projCell);
-            });
-            
-            elements.comparisonTable.appendChild(row);
-        });
     }
 
     // ========== UTILITY FUNCTIONS ==========
@@ -397,24 +348,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return newArray;
     }
 
-    function switchToView(view) {
-        state.currentView = view;
-        document.body.classList.toggle('tech-mode', view === 'technical');
-        elements.techModeBtn.classList.toggle('active', view === 'technical');
-        elements.simpleModeBtn.classList.toggle('active', view === 'simple');
-    }
-
     // ========== EVENT HANDLERS ==========
     function setupEventListeners() {
         // Main prediction button
         elements.predictBtn.addEventListener('click', predictRent);
-        
-        // Compare button
-        elements.compareBtn.addEventListener('click', () => {
-            if (state.comparisonData.length < 2) {
-                showError('Analyze at least 2 locations to compare');
-            }
-        });
         
         // Time range buttons
         elements.timeButtons.forEach(btn => {
@@ -423,25 +360,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.classList.add('active');
                 state.selectedYears = parseInt(btn.dataset.years);
             });
-        });
-        
-        // Mode switchers
-        elements.techModeBtn.addEventListener('click', () => switchToView('technical'));
-        elements.simpleModeBtn.addEventListener('click', () => switchToView('simple'));
-        
-        // Tips modal
-        elements.tipsBtn.addEventListener('click', () => {
-            elements.tipsModal.classList.add('active');
-        });
-        
-        elements.modalCloseBtn.addEventListener('click', () => {
-            elements.tipsModal.classList.remove('active');
-        });
-        
-        elements.tipsModal.addEventListener('click', (e) => {
-            if (e.target === elements.tipsModal) {
-                elements.tipsModal.classList.remove('active');
-            }
         });
     }
 

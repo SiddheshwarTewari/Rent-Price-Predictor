@@ -408,17 +408,51 @@ header {
 
 /* [Previous CSS remains the same until .result-chart] */
 
-.result-chart {
-    height: 200px;
+.result-chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 2rem;
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
+    padding: 20px 40px 40px 60px;
 }
 
-.chart-placeholder {
+.chart-title {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--neon-green);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+}
+
+.chart-axis-label {
+    position: absolute;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    color: var(--neon-blue);
+}
+
+.chart-axis-label.y-axis {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    width: 300px;
+    text-align: center;
+}
+
+.chart-axis-label.x-axis {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    text-align: center;
+}
+
+.result-chart {
     width: 100%;
     height: 100%;
     position: relative;
@@ -426,7 +460,7 @@ header {
 
 .chart-line {
     position: absolute;
-    bottom: 20px;
+    bottom: 0;
     left: 0;
     width: 100%;
     height: 1px;
@@ -435,24 +469,25 @@ header {
 
 .chart-point {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background: var(--neon-blue);
     border-radius: 50%;
     transform: translate(-50%, 50%);
-    box-shadow: 0 0 5px var(--neon-blue);
+    box-shadow: 0 0 8px var(--neon-blue);
+    z-index: 2;
 }
 
 .chart-point.current-point {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: var(--neon-green);
-    box-shadow: 0 0 10px var(--neon-green);
+    box-shadow: 0 0 12px var(--neon-green);
 }
 
 .chart-connector {
     position: absolute;
-    height: 1px;
+    height: 2px;
     background: var(--neon-blue);
     transform-origin: 0 0;
     z-index: 1;
@@ -468,7 +503,16 @@ header {
     white-space: nowrap;
 }
 
-/* [Rest of previous CSS remains the same] */
+.chart-year-marker {
+    position: absolute;
+    bottom: -15px;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* [Rest of previous CSS remains the same, remove .comparison-table styles] */
 
 .result-details {
     display: grid;
