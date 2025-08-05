@@ -392,6 +392,142 @@ header {
     color: var(--text-secondary);
 }
 
+/* [Previous CSS remains the same until .result-metrics] */
+
+/* === New Heat Index Styles === */
+.heat-index-container {
+    background: rgba(5, 1, 10, 0.5);
+    border: 1px solid var(--neon-blue);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.heat-index-title {
+    text-align: center;
+    color: var(--neon-green);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.heat-index-levels {
+    display: flex;
+    height: 30px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.heat-level {
+    flex: 1;
+    transition: all 0.3s;
+    opacity: 0.3;
+}
+
+.heat-level.active {
+    opacity: 1;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.heat-level.cold { background: var(--neon-blue); }
+.heat-level.cool { background: #05b0e8; }
+.heat-level.moderate { background: var(--neon-green); }
+.heat-level.warm { background: var(--neon-yellow); }
+.heat-level.hot { background: var(--neon-pink); }
+
+.heat-index-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* === Ratio Calculator Styles === */
+.ratio-calculator {
+    background: rgba(5, 1, 10, 0.5);
+    border: 1px solid var(--neon-purple);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.ratio-title {
+    color: var(--neon-blue);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.ratio-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2rem;
+    color: var(--neon-green);
+    margin-bottom: 5px;
+}
+
+.ratio-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* === Neighborhood Comparison Styles === */
+.neighborhood-comparison {
+    display: grid;
+    gap: 1rem;
+}
+
+.comparison-item {
+    margin-bottom: 0.5rem;
+}
+
+.comparison-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--neon-blue);
+}
+
+.comparison-bar {
+    height: 10px;
+    background: rgba(5, 217, 232, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+/* === Insight Stats Styles === */
+.insight-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    color: var(--neon-green);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* [Rest of the CSS remains the same] */
 /* === Chart Styles === */
 /* [Previous CSS remains the same until .result-metrics] */
 
