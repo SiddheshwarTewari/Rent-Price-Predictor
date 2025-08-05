@@ -3,19 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Rent Oracle</title>
+    <title>Neon Rent Oracle 2077</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <div class="scanlines"></div>
     <div class="noise"></div>
     <div class="glow-overlay"></div>
+    <div class="matrix-effect"></div>
     
+    <!-- Dystopian News Ticker -->
+    <div class="news-ticker">
+        <div class="ticker-content">
+            <span class="ticker-item">CORPO LANDLORDS RAISE RENTS 300% IN DARKTOWER DISTRICT</span>
+            <span class="ticker-item">GOV APPROVES NEOLIBERAL HOUSING ACT 2077</span>
+            <span class="ticker-item">SQUATTERS UNION THREATENS RENT STRIKE</span>
+            <span class="ticker-item">CRYPTO CRASH WIPES OUT VIRTUAL LANDLORDS</span>
+        </div>
+    </div>
+
     <div class="container">
         <header>
-            <h1 class="glow">NEON RENT ORACLE</h1>
-            <p class="subtitle">// FUTURE URBAN LIVING COST PREDICTOR //</p>
+            <h1 class="glow">NEON RENT ORACLE 2077</h1>
+            <p class="subtitle">// ADVANCED URBAN LIVING COST PREDICTOR MK.II //</p>
+            <div class="voice-control">
+                <button id="voice-btn" class="cyber-button-small">
+                    <span class="pulse-icon">🎤</span> VOICE MODE
+                </button>
+                <div id="voice-status" class="hidden">LISTENING...</div>
+            </div>
         </header>
         
         <main>
@@ -26,56 +44,111 @@
                         <span class="terminal-btn yellow"></span>
                         <span class="terminal-btn green"></span>
                     </div>
-                    <span class="terminal-title">RENT_PREDICTOR.EXE</span>
+                    <span class="terminal-title">RENT_PREDICTOR_ULTRA.EXE</span>
+                    <button id="hacker-btn" class="cyber-button-small">HACKER MODE</button>
                 </div>
                 
                 <div class="terminal-body">
                     <div class="input-section">
-                        <label for="city" class="input-label">ENTER STATE NAME:</label>
+                        <label for="city" class="input-label">ENTER LOCATION:</label>
                         <div class="input-container">
-                            <input type="text" id="city" class="cyber-input" placeholder="e.g. California or TX">
+                            <input type="text" id="city" class="cyber-input" placeholder="e.g. Neo-Tokyo, Night City District 5">
                             <button id="predict-btn" class="cyber-button">PREDICT</button>
+                            <button id="ar-btn" class="cyber-button-small">AR VIEW</button>
+                        </div>
+                        <div class="location-type">
+                            <button class="location-btn active" data-type="city">CITY</button>
+                            <button class="location-btn" data-type="neighborhood">NEIGHBORHOOD</button>
+                            <button class="location-btn" data-type="metro">METRO AREA</button>
                         </div>
                     </div>
                     
                     <div id="result" class="result-display hidden">
                         <div class="result-header">
                             <span class="blinking-cursor">_</span>
-                            <span class="result-title">PREDICTION RESULTS</span>
+                            <span class="result-title">PREDICTION MATRIX ANALYSIS</span>
                         </div>
                         <div class="result-content">
-                            <p><span class="data-label">LOCATION:</span> <span id="result-city" class="data-value">--</span></p>
-                            <p><span class="data-label">CURRENT MEDIAN RENT:</span> <span id="current-rent" class="data-value">--</span></p>
-                            <p><span class="data-label">NEXT YEAR PROJECTION:</span> <span id="next-year" class="data-value">--</span></p>
-                            <p><span class="data-label">5-YEAR FORECAST:</span> <span id="five-year" class="data-value">--</span></p>
-                            <div class="risk-meter">
-                                <span class="data-label">AFFORDABILITY RISK:</span>
-                                <div class="meter-bar">
-                                    <div id="risk-level" class="meter-fill" data-level="0"></div>
+                            <div class="result-grid">
+                                <div class="result-column">
+                                    <p><span class="data-label">LOCATION:</span> <span id="result-city" class="data-value">--</span></p>
+                                    <p><span class="data-label">CURRENT MEDIAN RENT:</span> <span id="current-rent" class="data-value">--</span></p>
+                                    <p><span class="data-label">NEXT YEAR PROJECTION:</span> <span id="next-year" class="data-value">--</span></p>
+                                    <p><span class="data-label">5-YEAR FORECAST:</span> <span id="five-year" class="data-value">--</span></p>
+                                </div>
+                                <div class="result-column">
+                                    <div class="risk-meter">
+                                        <span class="data-label">AFFORDABILITY RISK:</span>
+                                        <div class="meter-bar">
+                                            <div id="risk-level" class="meter-fill" data-level="0"></div>
+                                        </div>
+                                    </div>
+                                    <div id="crypto-converter">
+                                        <span class="data-label">CRYPTO EQUIVALENT:</span>
+                                        <span id="crypto-amount" class="data-value">--</span>
+                                    </div>
+                                    <button id="time-machine-btn" class="cyber-button-small">TIME MACHINE</button>
                                 </div>
                             </div>
+                            <div id="heatmap-container" class="hidden">
+                                <canvas id="heatmap"></canvas>
+                            </div>
+                            <div id="ai-commentary" class="ai-commentary"></div>
                         </div>
                     </div>
                     
                     <div id="loading" class="loading hidden">
-                        <div class="loading-text">ANALYZING URBAN DATA MATRIX</div>
+                        <div class="loading-text">ACCESSING URBAN DATA MATRIX</div>
                         <div class="loading-bar">
                             <div class="loading-progress"></div>
                         </div>
+                        <div class="loading-subtext">BYPASSING CORPO FIREWALLS...</div>
                     </div>
                 </div>
             </div>
             
-            <div class="hint">
-                <p>// SYSTEM NOTE: PREDICTIONS COMBINE CENSUS DATA WITH MARKET TREND ALGORITHMS</p>
+            <div id="3d-visualization" class="visualization hidden">
+                <div id="3d-container"></div>
+                <div class="viz-controls">
+                    <button id="viz-zoom-in" class="cyber-button-small">ZOOM+</button>
+                    <button id="viz-zoom-out" class="cyber-button-small">ZOOM-</button>
+                    <button id="viz-rotate" class="cyber-button-small">ROTATE</button>
+                </div>
             </div>
         </main>
         
         <footer>
-            <p class="footer-text">© 2077 NEON ORACLE SYSTEMS | PROTOTYPE v4.2.1</p>
+            <p class="footer-text">© 2077 NEON ORACLE SYSTEMS | PROTOTYPE v7.4.2 | <span id="connection-status">ONLINE</span></p>
         </footer>
     </div>
-    
+
+    <!-- AR Simulation Modal -->
+    <div id="ar-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>AUGMENTED REALITY VIEW</h3>
+            <div class="ar-viewport">
+                <div class="ar-overlay">
+                    <div class="ar-data">
+                        <div class="ar-rent">$----</div>
+                        <div class="ar-risk">RISK: --%</div>
+                    </div>
+                    <div class="ar-scanline"></div>
+                </div>
+                <video id="ar-video" loop muted>
+                    <source src="https://example.com/ar-bg.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="ar-controls">
+                <button id="ar-scan" class="cyber-button">SCAN AREA</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="glitch-sound" src="sounds/glitch.wav"></audio>
+    <audio id="scan-sound" src="sounds/scan.wav"></audio>
+    <audio id="error-sound" src="sounds/error.wav"></audio>
+
     <script src="script.js"></script>
 </body>
 </html>
