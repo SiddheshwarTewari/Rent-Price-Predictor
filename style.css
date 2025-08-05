@@ -1,4 +1,4 @@
-/* === Cyberpunk Base === */
+/* === Cyberpunk Core Theme === */
 :root {
     --neon-pink: #ff2a6d;
     --neon-blue: #05d9e8;
@@ -7,11 +7,20 @@
     --neon-yellow: #ffd300;
     --dark-bg: #0d0221;
     --darker-bg: #05010a;
-    --terminal-bg: rgba(13, 2, 33, 0.85);
+    --terminal-bg: rgba(13, 2, 33, 0.9);
     --text-color: #d1f7ff;
-    --text-dim: #8b9bb4;
+    --text-secondary: #8b9bb4;
     --glow-blue: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
     --glow-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+    --glow-green: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+    --border-glow: 1px solid var(--neon-blue);
+}
+
+/* === Base Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -19,9 +28,9 @@ body {
     background-color: var(--dark-bg);
     color: var(--text-color);
     line-height: 1.6;
-    margin: 0;
-    padding: 0;
+    position: relative;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 /* === Cyberpunk Effects === */
@@ -69,6 +78,16 @@ body {
     z-index: 998;
 }
 
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 997;
+}
+
 /* === Typography === */
 h1, h2, h3 {
     font-family: 'Orbitron', sans-serif;
@@ -79,7 +98,6 @@ h1, h2, h3 {
 h1 {
     font-size: 2.5rem;
     text-shadow: var(--glow-blue);
-    margin-bottom: 0.5rem;
 }
 
 h2 {
@@ -90,16 +108,7 @@ h2 {
 h3 {
     font-size: 1.2rem;
     color: var(--neon-blue);
-    margin-bottom: 1rem;
-}
-
-.subtitle {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--neon-pink);
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    text-shadow: var(--glow-pink);
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
 }
 
 /* === Layout === */
@@ -111,21 +120,61 @@ h3 {
     z-index: 1;
 }
 
-.dashboard {
+.app-container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
     gap: 1.5rem;
+    grid-template-areas:
+        "header"
+        "main"
+        "results"
+        "insights";
 }
 
-/* === Terminal Panels === */
+header {
+    grid-area: header;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.header-glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.result-grid {
+    grid-area: results;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* === Terminal Styles === */
 .terminal {
     background-color: var(--terminal-bg);
-    border: 1px solid var(--neon-blue);
+    border: var(--border-glow);
     box-shadow: 0 0 20px rgba(5, 217, 232, 0.3),
                 inset 0 0 15px rgba(5, 217, 232, 0.1);
     border-radius: 5px;
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.terminal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
 }
 
 .terminal-header {
@@ -133,7 +182,7 @@ h3 {
     padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--neon-blue);
+    border-bottom: var(--border-glow);
 }
 
 .terminal-buttons {
@@ -155,16 +204,15 @@ h3 {
 
 .terminal-title {
     margin-left: 1rem;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Share Tech Mono', monospace;
     font-size: 0.9rem;
     color: var(--neon-blue);
     letter-spacing: 1px;
 }
 
-.terminal-status {
+.terminal-time {
     margin-left: auto;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
     color: var(--neon-green);
 }
 
@@ -172,16 +220,22 @@ h3 {
     padding: 1.5rem;
 }
 
-/* === Input Elements === */
-.input-group {
+/* === Input Styles === */
+.input-section {
     margin-bottom: 1.5rem;
 }
 
-.input-group label {
+.input-row {
+    margin-bottom: 1rem;
+}
+
+.input-label {
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--neon-blue);
     font-weight: 500;
+    color: var(--neon-pink);
+    letter-spacing: 1px;
+    text-shadow: var(--glow-pink);
 }
 
 .cyber-input, .cyber-select {
@@ -211,7 +265,28 @@ h3 {
                 inset 0 0 5px rgba(5, 217, 232, 0.2);
 }
 
-/* === Buttons === */
+.time-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.time-btn {
+    background: rgba(5, 1, 10, 0.7);
+    border: 1px solid var(--neon-blue);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.time-btn.active {
+    background: var(--neon-blue);
+    color: var(--dark-bg);
+    font-weight: bold;
+}
+
+/* === Button Styles === */
 .cyber-button {
     background-color: var(--neon-purple);
     color: white;
@@ -226,8 +301,11 @@ h3 {
     overflow: hidden;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     box-shadow: 0 0 10px rgba(211, 0, 197, 0.5);
-    width: 100%;
-    margin-bottom: 0.5rem;
+}
+
+.cyber-button.large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
 }
 
 .cyber-button.secondary {
@@ -260,61 +338,57 @@ h3 {
     left: 100%;
 }
 
-/* === Results Display === */
-.result-header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(5, 217, 232, 0.3);
+.mode-switcher {
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    padding: 0.5rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.result-meta {
-    display: flex;
-    gap: 1rem;
-    color: var(--text-dim);
-    font-size: 0.9rem;
+.mode-switcher.active {
+    background: var(--neon-green);
+    color: var(--dark-bg);
+    font-weight: bold;
 }
 
-.result-grid {
+/* === Result Display === */
+.result-metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
-.result-card {
-    background: rgba(5, 1, 10, 0.5);
+.metric {
+    background: rgba(5, 1, 10, 0.7);
     border: 1px solid var(--neon-purple);
     padding: 1rem;
     border-radius: 5px;
-}
-
-.metric {
-    margin-bottom: 1rem;
 }
 
 .metric-label {
     display: block;
     color: var(--neon-blue);
     font-size: 0.9rem;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
 }
 
 .metric-value {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: var(--neon-green);
-}
-
-.gauge-container {
-    margin-top: 1rem;
 }
 
 .gauge {
     height: 10px;
     background: rgba(5, 217, 232, 0.1);
     border-radius: 5px;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
     overflow: hidden;
+    position: relative;
 }
 
 .gauge-fill {
@@ -324,61 +398,139 @@ h3 {
     transition: width 1s ease-in-out;
 }
 
-.gauge-label {
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.3rem;
     font-size: 0.8rem;
-    color: var(--text-dim);
-    margin-bottom: 0.3rem;
+    color: var(--text-secondary);
 }
 
-/* === Trend Visualization === */
-.trend-visualization {
-    margin-top: 2rem;
-}
+/* [Previous CSS remains the same until .result-chart] */
 
-.chart-container {
+.result-chart {
     height: 200px;
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    padding: 1rem;
+    margin-bottom: 1.5rem;
     position: relative;
+    overflow: hidden;
 }
 
-.chart {
+.chart-placeholder {
     width: 100%;
     height: 100%;
     position: relative;
 }
 
-/* === Loading Animation === */
-.loading {
-    text-align: center;
-    padding: 2rem;
-}
-
-.loading-bar {
-    height: 4px;
-    background: rgba(5, 217, 232, 0.1);
-    border-radius: 2px;
-    margin-bottom: 1rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.loading-bar::after {
-    content: '';
+.chart-line {
     position: absolute;
-    top: 0;
+    bottom: 20px;
     left: 0;
-    height: 100%;
-    width: 30%;
-    background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-    animation: loading 2s infinite ease-in-out;
+    width: 100%;
+    height: 1px;
+    background: rgba(5, 217, 232, 0.3);
 }
 
-@keyframes loading {
-    0% { left: -30%; }
-    100% { left: 100%; }
+.chart-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--neon-blue);
+    border-radius: 50%;
+    transform: translate(-50%, 50%);
+    box-shadow: 0 0 5px var(--neon-blue);
+}
+
+.chart-point.current-point {
+    width: 12px;
+    height: 12px;
+    background: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green);
+}
+
+.chart-connector {
+    position: absolute;
+    height: 1px;
+    background: var(--neon-blue);
+    transform-origin: 0 0;
+    z-index: 1;
+}
+
+.chart-label {
+    position: absolute;
+    bottom: -25px;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--neon-blue);
+    white-space: nowrap;
+}
+
+/* [Rest of previous CSS remains the same] */
+
+.result-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.detail {
+    background: rgba(5, 1, 10, 0.5);
+    border: 1px solid var(--neon-purple);
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.detail-label {
+    display: block;
+    color: var(--neon-blue);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.detail-value {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text-color);
+}
+
+/* === Comparison Table === */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparison-table th {
+    background: rgba(5, 217, 232, 0.1);
+    color: var(--neon-blue);
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--neon-blue);
+}
+
+.comparison-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(5, 217, 232, 0.2);
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* === Insights === */
+.insights-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.insight {
+    background: rgba(5, 1, 10, 0.7);
+    border: 1px solid var(--neon-purple);
+    padding: 1rem;
+    border-radius: 5px;
+    min-height: 150px;
 }
 
 /* === Footer === */
@@ -388,24 +540,137 @@ footer {
     border-top: 1px solid rgba(5, 217, 232, 0.2);
 }
 
-.system-status {
-    display: flex;
-    justify-content: space-between;
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.footer-section h3 {
+    color: var(--neon-blue);
     margin-bottom: 1rem;
+}
+
+.status-indicators {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.status {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
-.online {
+.status.active {
     color: var(--neon-green);
+}
+
+.footer-btn {
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.footer-btn:hover {
+    background: rgba(5, 217, 232, 0.1);
 }
 
 .copyright {
     text-align: center;
+    margin-top: 2rem;
     font-size: 0.8rem;
-    color: var(--text-dim);
+    color: var(--text-secondary);
 }
 
-/* === Glitch Effect === */
+/* === Modal === */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 1, 10, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: var(--terminal-bg);
+    border: var(--border-glow);
+    box-shadow: 0 0 30px var(--neon-blue);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 5px;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: var(--border-glow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--neon-pink);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.tip {
+    margin-bottom: 1.5rem;
+}
+
+.tip:last-child {
+    margin-bottom: 0;
+}
+
+/* === Animations === */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes glow-pulse {
+    from {
+        text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+    }
+    to {
+        text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-purple);
+    }
+}
+
+@keyframes loading {
+    0% { left: 0%; width: 0%; }
+    50% { width: 50%; }
+    100% { left: 100%; width: 0%; }
+}
+
 .glitch {
     position: relative;
 }
@@ -424,12 +689,14 @@ footer {
 .glitch::before {
     left: 2px;
     text-shadow: -2px 0 var(--neon-pink);
+    clip: rect(24px, 550px, 90px, 0);
     animation: glitch-anim-1 2s infinite linear alternate-reverse;
 }
 
 .glitch::after {
     left: -2px;
     text-shadow: -2px 0 var(--neon-blue);
+    clip: rect(85px, 550px, 140px, 0);
     animation: glitch-anim-2 2s infinite linear alternate-reverse;
 }
 
@@ -461,10 +728,19 @@ footer {
     100% { clip: rect(35px, 9999px, 65px, 0); }
 }
 
+/* === Utility Classes === */
+.hidden {
+    display: none !important;
+}
+
 /* === Responsive Design === */
 @media (max-width: 1024px) {
-    .dashboard {
+    .result-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .insights-container {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
@@ -473,15 +749,28 @@ footer {
         padding: 1rem;
     }
     
-    .result-grid {
+    .result-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .insights-container {
         grid-template-columns: 1fr;
     }
     
     h1 {
         font-size: 1.8rem;
     }
-}
-
-.hidden {
-    display: none !important;
+    
+    .metric-value {
+        font-size: 1.2rem;
+    }
 }
