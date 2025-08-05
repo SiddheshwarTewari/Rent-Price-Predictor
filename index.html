@@ -50,10 +50,6 @@
                             </select>
                         </div>
                         <div class="input-row">
-                            <label for="income" class="input-label">ANNUAL INCOME ($):</label>
-                            <input type="number" id="income" class="cyber-input" placeholder="Enter your annual income">
-                        </div>
-                        <div class="input-row">
                             <label class="input-label">TIME RANGE:</label>
                             <div class="time-toggle">
                                 <button class="time-btn active" data-years="1">1YR</button>
@@ -100,25 +96,11 @@
                                 </div>
                             </div>
                             
-                            <div class="heat-index-container">
-                                <div class="heat-index-title">MARKET HEAT INDEX</div>
-                                <div class="heat-index-levels">
-                                    <div class="heat-level cold" data-level="1"></div>
-                                    <div class="heat-level cool" data-level="2"></div>
-                                    <div class="heat-level moderate" data-level="3"></div>
-                                    <div class="heat-level warm" data-level="4"></div>
-                                    <div class="heat-level hot" data-level="5"></div>
+                            <div class="projection-container">
+                                <div class="projection-title">RENT PROJECTIONS</div>
+                                <div class="projection-grid" id="projection-data">
+                                    <!-- Projection data will be inserted here -->
                                 </div>
-                                <div class="heat-index-labels">
-                                    <span>Cold</span>
-                                    <span>Hot</span>
-                                </div>
-                            </div>
-                            
-                            <div class="ratio-calculator">
-                                <div class="ratio-title">RENT TO INCOME RATIO</div>
-                                <div class="ratio-value" id="rent-income-ratio">--</div>
-                                <div class="ratio-description" id="ratio-description"></div>
                             </div>
                             
                             <div class="result-details">
@@ -141,34 +123,24 @@
                 
                 <div class="terminal secondary-terminal" id="comparison-results">
                     <div class="terminal-header">
-                        <span class="terminal-title">NEIGHBORHOOD_COMPARISON</span>
+                        <span class="terminal-title">COMPARISON_DATA</span>
                     </div>
                     <div class="terminal-body">
-                        <div class="neighborhood-comparison">
-                            <div class="comparison-item">
-                                <div class="comparison-label">Safety Rating</div>
-                                <div class="comparison-bar">
-                                    <div class="bar-fill" id="safety-rating"></div>
-                                </div>
-                            </div>
-                            <div class="comparison-item">
-                                <div class="comparison-label">Amenities Score</div>
-                                <div class="comparison-bar">
-                                    <div class="bar-fill" id="amenities-score"></div>
-                                </div>
-                            </div>
-                            <div class="comparison-item">
-                                <div class="comparison-label">Transit Access</div>
-                                <div class="comparison-bar">
-                                    <div class="bar-fill" id="transit-access"></div>
-                                </div>
-                            </div>
-                            <div class="comparison-item">
-                                <div class="comparison-label">School Quality</div>
-                                <div class="comparison-bar">
-                                    <div class="bar-fill" id="school-quality"></div>
-                                </div>
-                            </div>
+                        <div class="comparison-display">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Current</th>
+                                        <th>1YR</th>
+                                        <th>3YR</th>
+                                        <th>5YR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparison-data">
+                                    <!-- Comparison data will be inserted here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -183,44 +155,14 @@
                         <div class="insight" id="employment-insight">
                             <h3>EMPLOYMENT TRENDS</h3>
                             <p>Loading regional job market data...</p>
-                            <div class="insight-stats">
-                                <div class="stat">
-                                    <span class="stat-value" id="unemployment-rate">--</span>
-                                    <span class="stat-label">Unemployment</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-value" id="job-growth">--</span>
-                                    <span class="stat-label">Job Growth</span>
-                                </div>
-                            </div>
                         </div>
                         <div class="insight" id="migration-insight">
                             <h3>POPULATION FLOW</h3>
                             <p>Analyzing migration patterns...</p>
-                            <div class="insight-stats">
-                                <div class="stat">
-                                    <span class="stat-value" id="population-change">--</span>
-                                    <span class="stat-label">Population Δ</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-value" id="migration-rate">--</span>
-                                    <span class="stat-label">Migration Rate</span>
-                                </div>
-                            </div>
                         </div>
                         <div class="insight" id="construction-insight">
                             <h3>HOUSING SUPPLY</h3>
                             <p>Evaluating new construction...</p>
-                            <div class="insight-stats">
-                                <div class="stat">
-                                    <span class="stat-value" id="inventory-level">--</span>
-                                    <span class="stat-label">Inventory</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-value" id="construction-rate">--</span>
-                                    <span class="stat-label">New Units</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -246,7 +188,6 @@
                     <h3>QUICK LINKS</h3>
                     <button class="footer-btn" id="save-btn">SAVE REPORT</button>
                     <button class="footer-btn" id="tips-btn">TIPS</button>
-                    <button class="footer-btn" id="faq-btn">FAQ</button>
                 </div>
             </div>
             <p class="copyright">© 2077 QUANTUM ANALYTICS | UNAUTHORIZED ACCESS PROHIBITED</p>
@@ -265,12 +206,12 @@
                     <p>Enter state abbreviations (CA) or full names (California). City-level data available for major metros.</p>
                 </div>
                 <div class="tip">
-                    <h3>INCOME ANALYSIS</h3>
-                    <p>Enter your annual income to calculate rent affordability and get personalized recommendations.</p>
+                    <h3>COMPARISON MODE</h3>
+                    <p>Click "COMPARE LOCATIONS" to analyze multiple areas side-by-side.</p>
                 </div>
                 <div class="tip">
-                    <h3>NEIGHBORHOOD DATA</h3>
-                    <p>See how different neighborhoods compare in terms of safety, amenities, and transit access.</p>
+                    <h3>TIME RANGES</h3>
+                    <p>Select different time ranges (1-10 years) to see long-term projections.</p>
                 </div>
             </div>
         </div>

@@ -341,6 +341,58 @@ header {
 }
 
 /* === Result Display === */
+
+/* [Previous CSS remains the same until .result-metrics] */
+
+/* === Projection Grid === */
+.projection-container {
+    margin-bottom: 1.5rem;
+    background: rgba(5, 1, 10, 0.5);
+    border: 1px solid var(--neon-blue);
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.projection-title {
+    text-align: center;
+    color: var(--neon-green);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.projection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.projection-item {
+    background: rgba(5, 1, 10, 0.7);
+    border: 1px solid var(--neon-purple);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.projection-year {
+    color: var(--neon-blue);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.projection-value {
+    color: var(--neon-green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* [Rest of the CSS remains the same] */
+
 .result-metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -390,349 +442,6 @@ header {
     margin-top: 0.3rem;
     font-size: 0.8rem;
     color: var(--text-secondary);
-}
-
-/* [Previous CSS remains the same until .result-metrics] */
-
-/* === New Heat Index Styles === */
-.heat-index-container {
-    background: rgba(5, 1, 10, 0.5);
-    border: 1px solid var(--neon-blue);
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 1.5rem;
-}
-
-.heat-index-title {
-    text-align: center;
-    color: var(--neon-green);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-}
-
-.heat-index-levels {
-    display: flex;
-    height: 30px;
-    margin-bottom: 5px;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.heat-level {
-    flex: 1;
-    transition: all 0.3s;
-    opacity: 0.3;
-}
-
-.heat-level.active {
-    opacity: 1;
-    box-shadow: 0 0 10px currentColor;
-}
-
-.heat-level.cold { background: var(--neon-blue); }
-.heat-level.cool { background: #05b0e8; }
-.heat-level.moderate { background: var(--neon-green); }
-.heat-level.warm { background: var(--neon-yellow); }
-.heat-level.hot { background: var(--neon-pink); }
-
-.heat-index-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-/* === Ratio Calculator Styles === */
-.ratio-calculator {
-    background: rgba(5, 1, 10, 0.5);
-    border: 1px solid var(--neon-purple);
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.ratio-title {
-    color: var(--neon-blue);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-}
-
-.ratio-value {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 2rem;
-    color: var(--neon-green);
-    margin-bottom: 5px;
-}
-
-.ratio-description {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-/* === Neighborhood Comparison Styles === */
-.neighborhood-comparison {
-    display: grid;
-    gap: 1rem;
-}
-
-.comparison-item {
-    margin-bottom: 0.5rem;
-}
-
-.comparison-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.3rem;
-    font-size: 0.9rem;
-    color: var(--neon-blue);
-}
-
-.comparison-bar {
-    height: 10px;
-    background: rgba(5, 217, 232, 0.1);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
-    width: 0%;
-    transition: width 1s ease-in-out;
-}
-
-/* === Insight Stats Styles === */
-.insight-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 1rem;
-}
-
-.stat {
-    text-align: center;
-}
-
-.stat-value {
-    display: block;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1.2rem;
-    color: var(--neon-green);
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-/* [Rest of the CSS remains the same] */
-/* === Chart Styles === */
-/* [Previous CSS remains the same until .result-metrics] */
-
-/* === Chart Styles === */
-.chart-container {
-    margin-bottom: 1.5rem;
-    background: rgba(5, 1, 10, 0.5);
-    border: 1px solid var(--neon-blue);
-    border-radius: 5px;
-    padding: 15px;
-}
-
-.chart-title {
-    text-align: center;
-    color: var(--neon-green);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-}
-
-.chart-wrapper {
-    display: flex;
-    height: 300px;
-}
-
-.y-axis {
-    display: flex;
-    flex-direction: column;
-    width: 50px;
-    margin-right: 10px;
-}
-
-.y-label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    text-align: center;
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.y-ticks {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    padding: 15px 0;
-}
-
-.y-tick {
-    color: var(--neon-blue);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    position: relative;
-}
-
-.y-tick::after {
-    content: '';
-    position: absolute;
-    left: 30px;
-    top: 50%;
-    width: 10px;
-    height: 1px;
-    background: rgba(5, 217, 232, 0.5);
-}
-
-.chart-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.chart {
-    flex: 1;
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.x-axis {
-    display: flex;
-    flex-direction: column;
-    height: 40px;
-}
-
-.x-ticks {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 5px;
-}
-
-.x-tick {
-    color: var(--neon-blue);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    position: relative;
-    flex: 1;
-    text-align: center;
-}
-
-.x-tick::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    width: 1px;
-    height: 10px;
-    background: rgba(5, 217, 232, 0.5);
-}
-
-.x-label {
-    text-align: center;
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-}
-
-.chart-line {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: rgba(5, 217, 232, 0.3);
-}
-
-.chart-point {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: var(--neon-blue);
-    border-radius: 50%;
-    transform: translate(-50%, 50%);
-    box-shadow: 0 0 8px var(--neon-blue);
-    z-index: 2;
-}
-
-.chart-point.current-point {
-    width: 14px;
-    height: 14px;
-    background: var(--neon-green);
-    box-shadow: 0 0 12px var(--neon-green);
-}
-
-.chart-connector {
-    position: absolute;
-    height: 2px;
-    background: var(--neon-blue);
-    transform-origin: 0 0;
-    z-index: 1;
-}
-
-.chart-value-label {
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--neon-green);
-    background: rgba(5, 1, 10, 0.8);
-    padding: 2px 5px;
-    border-radius: 3px;
-    white-space: nowrap;
-}
-
-/* [Rest of the CSS remains the same] */
-
-.chart-tick {
-    position: absolute;
-    background: var(--neon-blue);
-}
-
-.chart-tick-y {
-    left: 0;
-    width: 5px;
-    height: 1px;
-}
-
-.chart-tick-x {
-    bottom: 0;
-    width: 1px;
-    height: 5px;
-}
-
-.chart-tick-label {
-    position: absolute;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--neon-blue);
-}
-
-.chart-tick-label-y {
-    left: 10px;
-    transform: translateY(-50%);
-}
-
-.chart-tick-label-x {
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 /* === Result Details === */

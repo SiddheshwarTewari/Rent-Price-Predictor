@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const elements = {
         locationInput: document.getElementById('location'),
         bedroomSelect: document.getElementById('bedrooms'),
-        incomeInput: document.getElementById('income'),
         predictBtn: document.getElementById('predict-btn'),
         compareBtn: document.getElementById('compare-btn'),
         timeButtons: document.querySelectorAll('.time-btn'),
@@ -25,25 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
         marketVolatilityEl: document.getElementById('market-volatility'),
         recommendationEl: document.getElementById('recommendation'),
         dataSourceEl: document.getElementById('data-source'),
-        rentIncomeRatioEl: document.getElementById('rent-income-ratio'),
-        ratioDescriptionEl: document.getElementById('ratio-description'),
-        heatLevels: document.querySelectorAll('.heat-level'),
-        safetyRating: document.getElementById('safety-rating'),
-        amenitiesScore: document.getElementById('amenities-score'),
-        transitAccess: document.getElementById('transit-access'),
-        schoolQuality: document.getElementById('school-quality'),
-        unemploymentRate: document.getElementById('unemployment-rate'),
-        jobGrowth: document.getElementById('job-growth'),
-        populationChange: document.getElementById('population-change'),
-        migrationRate: document.getElementById('migration-rate'),
-        inventoryLevel: document.getElementById('inventory-level'),
-        constructionRate: document.getElementById('construction-rate'),
+        projectionData: document.getElementById('projection-data'),
+        comparisonTable: document.getElementById('comparison-data'),
         currentTimeEl: document.getElementById('current-time'),
         apiStatusEl: document.getElementById('api-status'),
         lastUpdatedEl: document.getElementById('last-updated'),
         tipsModal: document.getElementById('tips-modal'),
         tipsBtn: document.getElementById('tips-btn'),
-        faqBtn: document.getElementById('faq-btn'),
         modalCloseBtn: document.querySelector('.modal-close')
     };
 
@@ -60,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
     async function predictRent() {
         const location = elements.locationInput.value.trim();
         const bedrooms = elements.bedroomSelect.value;
-        const income = elements.incomeInput.value ? parseInt(elements.incomeInput.value) : null;
         
         if (!location) {
             showError('Please enter a location');
@@ -70,9 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showLoading(true);
             const rentData = await getRentData(location, bedrooms, state.selectedYears);
-            displayResults(rentData, income);
+            displayResults(rentData);
             generateInsights(location);
-            generateNeighborhoodData(location);
         } catch (error) {
             console.error('Prediction error:', error);
             showError(error.message || 'Failed to generate prediction');
@@ -95,8 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     volatility: baseData.volatility,
                     projections,
                     source: 'Census+MarketAdj',
-                    bedrooms,
-                    heatIndex: baseData.heatIndex
+                    bedrooms
                 });
             }, 800);
         });
@@ -104,14 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getBaseRentData(location) {
         const stateData = {
-            'california': { medianRent: 2450, trend: 1.03, volatility: 0.08, heatIndex: 4 },
-            'new york': { medianRent: 2200, trend: 1.04, volatility: 0.07, heatIndex: 5 },
-            'texas': { medianRent: 1380, trend: 1.05, volatility: 0.09, heatIndex: 3 },
-            'florida': { medianRent: 1620, trend: 1.07, volatility: 0.10, heatIndex: 4 },
-            'illinois': { medianRent: 1550, trend: 1.04, volatility: 0.07, heatIndex: 2 },
-            'colorado': { medianRent: 1850, trend: 1.05, volatility: 0.08, heatIndex: 3 },
-            'washington': { medianRent: 1950, trend: 1.06, volatility: 0.09, heatIndex: 4 },
-            'default': { medianRent: 1500, trend: 1.04, volatility: 0.07, heatIndex: 2 }
+            'california': { medianRent: 2450, trend: 1.03, volatility: 0.08 },
+            'new york': { medianRent: 2200, trend: 1.04, volatility: 0.07 },
+            'texas': { medianRent: 1380, trend: 1.05, volatility: 0.09 },
+            'florida': { medianRent: 1620, trend: 1.07, volatility: 0.10 },
+            'illinois': { medianRent: 1550, trend: 1.04, volatility: 0.07 },
+            'colorado': { medianRent: 1850, trend: 1.05, volatility: 0.08 },
+            'washington': { medianRent: 1950, trend: 1.06, volatility: 0.09 },
+            'default': { medianRent: 1500, trend: 1.04, volatility: 0.07 }
         };
         
         const normalizedLocation = location.toLowerCase();
@@ -143,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========== DISPLAY FUNCTIONS ==========
-    function displayResults(data, income) {
+    function displayResults(data) {
         elements.resultLocationEl.textContent = data.location;
         elements.currentRentEl.textContent = `$${data.current.toLocaleString()}`;
         elements.dataSourceEl.textContent = `DATA_SOURCE: ${data.source}`;
@@ -159,108 +143,191 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.marketVolatilityEl.textContent = `${(data.volatility * 100).toFixed(1)}%`;
         elements.recommendationEl.textContent = generateRecommendation(data.current, data.trend);
         
-        // Update heat index
-        updateHeatIndex(data.heatIndex);
-        
-        // Calculate rent to income ratio if income provided
-        if (income) {
-            const monthlyIncome = income / 12;
-            const ratio = ((data.current / monthlyIncome) * 100).toFixed(1);
-            elements.rentIncomeRatioEl.textContent = `${ratio}%`;
-            
-            let description = '';
-            if (ratio > 30) {
-                description = 'Above recommended threshold (30%)';
-            } else if (ratio > 20) {
-                description = 'Within recommended range (20-30%)';
-            } else {
-                description = 'Below recommended threshold (20%)';
-            }
-            elements.ratioDescriptionEl.textContent = description;
-        } else {
-            elements.rentIncomeRatioEl.textContent = '--';
-            elements.ratioDescriptionEl.textContent = 'Enter income to calculate ratio';
-        }
+        updateProjectionDisplay(data.current, data.projections);
+        addToComparisonData(data);
     }
 
-    function updateHeatIndex(level) {
-        elements.heatLevels.forEach((el, index) => {
-            if (index < level) {
-                el.classList.add('active');
-            } else {
-                el.classList.remove('active');
-            }
+    function updateProjectionDisplay(currentRent, projections) {
+        elements.projectionData.innerHTML = '';
+        
+        // Add current rent
+        const currentItem = document.createElement('div');
+        currentItem.className = 'projection-item';
+        currentItem.innerHTML = `
+            <div class="projection-year">CURRENT</div>
+            <div class="projection-value">$${currentRent.toLocaleString()}</div>
+        `;
+        elements.projectionData.appendChild(currentItem);
+        
+        // Add projections
+        projections.forEach((value, index) => {
+            const item = document.createElement('div');
+            item.className = 'projection-item';
+            item.innerHTML = `
+                <div class="projection-year">${index + 1} YEAR${index > 0 ? 'S' : ''}</div>
+                <div class="projection-value">$${value.toLocaleString()}</div>
+            `;
+            elements.projectionData.appendChild(item);
         });
     }
 
-    function generateNeighborhoodData(location) {
-        // Simulate neighborhood data based on location
-        setTimeout(() => {
-            const safetyRating = Math.min(100, Math.max(60, Math.floor(Math.random() * 100)));
-            const amenitiesScore = Math.min(100, Math.max(40, Math.floor(Math.random() * 100)));
-            const transitAccess = Math.min(100, Math.max(50, Math.floor(Math.random() * 100)));
-            const schoolQuality = Math.min(100, Math.max(30, Math.floor(Math.random() * 100)));
-            
-            elements.safetyRating.style.width = `${safetyRating}%`;
-            elements.amenitiesScore.style.width = `${amenitiesScore}%`;
-            elements.transitAccess.style.width = `${transitAccess}%`;
-            elements.schoolQuality.style.width = `${schoolQuality}%`;
-        }, 500);
+    function updateGauge(score) {
+        elements.affordabilityGauge.style.width = `${score}%`;
+        
+        if (score > 70) {
+            elements.affordabilityGauge.style.background = 
+                'linear-gradient(90deg, var(--neon-pink), var(--neon-purple))';
+        } else if (score > 30) {
+            elements.affordabilityGauge.style.background = 
+                'linear-gradient(90deg, var(--neon-yellow), var(--neon-pink))';
+        } else {
+            elements.affordabilityGauge.style.background = 
+                'linear-gradient(90deg, var(--neon-green), var(--neon-blue))';
+        }
     }
 
     function generateInsights(location) {
         setTimeout(() => {
-            // Employment insights
             document.getElementById('employment-insight').innerHTML = `
                 <h3>EMPLOYMENT TRENDS</h3>
-                <p>Tech sector growth driving demand in ${location}. Unemployment below national average.</p>
-                <div class="insight-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="unemployment-rate">3.8%</span>
-                        <span class="stat-label">Unemployment</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="job-growth">+2.4%</span>
-                        <span class="stat-label">Job Growth</span>
-                    </div>
-                </div>
+                <p>Tech sector growth driving demand in ${location}. Unemployment at 3.8%, below national average.</p>
             `;
             
-            // Migration insights
             document.getElementById('migration-insight').innerHTML = `
                 <h3>POPULATION FLOW</h3>
                 <p>Net migration +2.4% last year. Primary sources: ${getRandomCities(3)}.</p>
-                <div class="insight-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="population-change">+1.8%</span>
-                        <span class="stat-label">Population Δ</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="migration-rate">2.1%</span>
-                        <span class="stat-label">Migration Rate</span>
-                    </div>
-                </div>
             `;
             
-            // Construction insights
             document.getElementById('construction-insight').innerHTML = `
                 <h3>HOUSING SUPPLY</h3>
                 <p>Only 1.2 months of inventory available. ${getRandomConstructionStats()}.</p>
-                <div class="insight-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="inventory-level">1.2mo</span>
-                        <span class="stat-label">Inventory</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="construction-rate">+850</span>
-                        <span class="stat-label">New Units</span>
-                    </div>
-                </div>
             `;
         }, 1000);
     }
 
-    // [Rest of the utility functions remain the same]
+    // ========== COMPARISON FUNCTIONS ==========
+    function addToComparisonData(data) {
+        const existingIndex = state.comparisonData.findIndex(item => 
+            item.location.toLowerCase() === data.location.toLowerCase()
+        );
+        
+        if (existingIndex >= 0) {
+            state.comparisonData[existingIndex] = data;
+        } else {
+            state.comparisonData.push(data);
+        }
+        
+        updateComparisonTable();
+    }
+
+    function updateComparisonTable() {
+        elements.comparisonTable.innerHTML = '';
+        
+        state.comparisonData.forEach(data => {
+            const row = document.createElement('tr');
+            
+            // Location cell
+            const locationCell = document.createElement('td');
+            locationCell.textContent = data.location;
+            row.appendChild(locationCell);
+            
+            // Current rent cell
+            const currentCell = document.createElement('td');
+            currentCell.textContent = `$${data.current.toLocaleString()}`;
+            row.appendChild(currentCell);
+            
+            // Projection cells (1YR, 3YR, 5YR)
+            [0, 2, 4].forEach(yearIndex => {
+                const projCell = document.createElement('td');
+                if (data.projections.length > yearIndex) {
+                    projCell.textContent = `$${data.projections[yearIndex].toLocaleString()}`;
+                } else {
+                    // Calculate if not available
+                    const projected = Math.round(data.current * Math.pow(data.trend, yearIndex + 1));
+                    projCell.textContent = `$${projected.toLocaleString()}`;
+                }
+                row.appendChild(projCell);
+            });
+            
+            elements.comparisonTable.appendChild(row);
+        });
+    }
+
+    // ========== UTILITY FUNCTIONS ==========
+    function calculateAffordabilityScore(rent, trend) {
+        const baseScore = Math.min(100, Math.max(0, (rent - 800) / 20));
+        const trendImpact = (trend - 1) * 500;
+        return Math.min(100, Math.max(0, baseScore + trendImpact));
+    }
+
+    function generateRecommendation(rent, trend) {
+        if (rent > 2500 && trend > 1.05) return 'HIGH RISK - Consider alternative markets';
+        if (rent > 2000 || trend > 1.04) return 'MODERATE RISK - Monitor market closely';
+        return 'FAVORABLE - Good investment potential';
+    }
+
+    function checkApiStatus() {
+        setTimeout(() => {
+            elements.apiStatusEl.textContent = 'CENSUS_API: ONLINE';
+            elements.apiStatusEl.classList.add('active');
+        }, 1500);
+    }
+
+    function updateClock() {
+        const now = new Date();
+        elements.currentTimeEl.textContent = now.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    function showLoading(show) {
+        // Implement loading indicator if needed
+    }
+
+    function showError(message) {
+        const errorEl = document.createElement('div');
+        errorEl.className = 'cyber-alert';
+        errorEl.innerHTML = `
+            <div class="cyber-alert-content">
+                <span class="alert-icon">⚠️</span>
+                <span class="alert-text">${message}</span>
+            </div>
+        `;
+        document.body.appendChild(errorEl);
+        
+        setTimeout(() => {
+            errorEl.classList.add('fade-out');
+            setTimeout(() => errorEl.remove(), 500);
+        }, 5000);
+    }
+
+    function getRandomCities(count) {
+        const cities = ['New York', 'Chicago', 'Los Angeles', 'Houston', 'Miami', 
+                       'San Francisco', 'Seattle', 'Boston', 'Atlanta', 'Denver'];
+        return shuffleArray(cities).slice(0, count).join(', ');
+    }
+
+    function getRandomConstructionStats() {
+        const stats = [
+            'Permits down 12% year-over-year',
+            'High-rise construction up 18%',
+            'Single-family permits at 10-year low',
+            'Zoning changes expected to increase supply'
+        ];
+        return stats[Math.floor(Math.random() * stats.length)];
+    }
+
+    function shuffleArray(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
 
     // ========== EVENT HANDLERS ==========
     function setupEventListeners() {
