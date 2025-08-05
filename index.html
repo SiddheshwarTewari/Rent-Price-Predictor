@@ -10,6 +10,7 @@
 <body>
     <div class="scanlines"></div>
     <div class="noise"></div>
+    <div class="glow-overlay"></div>
     
     <div class="container">
         <header>
@@ -30,9 +31,9 @@
                 
                 <div class="terminal-body">
                     <div class="input-section">
-                        <label for="city" class="input-label">ENTER CITY NAME:</label>
+                        <label for="city" class="input-label">ENTER STATE NAME:</label>
                         <div class="input-container">
-                            <input type="text" id="city" class="cyber-input" placeholder="e.g. Neo-Tokyo, Night City">
+                            <input type="text" id="city" class="cyber-input" placeholder="e.g. California or TX">
                             <button id="predict-btn" class="cyber-button">PREDICT</button>
                         </div>
                     </div>
@@ -43,9 +44,9 @@
                             <span class="result-title">PREDICTION RESULTS</span>
                         </div>
                         <div class="result-content">
-                            <p><span class="data-label">CITY:</span> <span id="result-city" class="data-value">--</span></p>
-                            <p><span class="data-label">CURRENT AVG RENT:</span> <span id="current-rent" class="data-value">--</span></p>
-                            <p><span class="data-label">NEXT YEAR PREDICTION:</span> <span id="next-year" class="data-value">--</span></p>
+                            <p><span class="data-label">LOCATION:</span> <span id="result-city" class="data-value">--</span></p>
+                            <p><span class="data-label">CURRENT MEDIAN RENT:</span> <span id="current-rent" class="data-value">--</span></p>
+                            <p><span class="data-label">NEXT YEAR PROJECTION:</span> <span id="next-year" class="data-value">--</span></p>
                             <p><span class="data-label">5-YEAR FORECAST:</span> <span id="five-year" class="data-value">--</span></p>
                             <div class="risk-meter">
                                 <span class="data-label">AFFORDABILITY RISK:</span>
@@ -66,7 +67,7 @@
             </div>
             
             <div class="hint">
-                <p>// SYSTEM NOTE: PREDICTIONS BASED ON NEURAL NET ANALYSIS OF 12,402 URBAN DATA POINTS</p>
+                <p>// SYSTEM NOTE: PREDICTIONS COMBINE CENSUS DATA WITH MARKET TREND ALGORITHMS</p>
             </div>
         </main>
         
