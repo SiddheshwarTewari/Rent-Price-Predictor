@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
         recommendationEl: document.getElementById('recommendation'),
         dataSourceEl: document.getElementById('data-source'),
         rentTrendChart: document.getElementById('rent-trend-chart'),
-        yAxisValues: document.getElementById('y-axis-values'),
-        xAxisValues: document.getElementById('x-axis-values'),
+        yTicks: document.getElementById('y-ticks'),
+        xTicks: document.getElementById('x-ticks'),
         comparisonTable: document.getElementById('comparison-data'),
         currentTimeEl: document.getElementById('current-time'),
         apiStatusEl: document.getElementById('api-status'),
@@ -151,72 +151,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateChart(currentRent, projections) {
         // Clear previous chart
-        elements.rentTrendChart.innerHTML = '<div class="chart-grid"></div>';
-        elements.yAxisValues.innerHTML = '';
-        elements.xAxisValues.innerHTML = '';
+        elements.rentTrendChart.innerHTML = '';
+        elements.yTicks.innerHTML = '';
+        elements.xTicks.innerHTML = '';
         
-        // Combine all values for scaling
+        // Calculate min/max for scaling
         const allValues = [currentRent, ...projections];
         const maxValue = Math.max(...allValues);
-        const minValue = Math.min(...allValue);
-        const valueRange = maxValue - minValue || 1; // Avoid division by zero
+        const minValue = Math.min(...allValues);
+        const valueRange = maxValue - minValue || 1;
         
         // Chart dimensions
-        const chartHeight = 250;
+        const chartHeight = elements.rentTrendChart.offsetHeight;
         const chartWidth = elements.rentTrendChart.offsetWidth;
         
-        // Create Y-axis values
-        createYAxis(minValue, maxValue);
+        // Create Y-axis ticks (5 steps)
+        const yStep = Math.ceil(valueRange / 5 / 100) * 100; // Round to nearest 100
+        for (let i = 0; i <= 5; i++) {
+            const value = Math.round(minValue + (yStep * i));
+            if (value > maxValue) continue;
+            
+            const yPos = chartHeight - ((value - minValue) / valueRange * chartHeight);
+            
+            const yTick = document.createElement('div');
+            yTick.className = 'y-tick';
+            yTick.textContent = `$${value.toLocaleString()}`;
+            yTick.style.bottom = `${yPos}px`;
+            elements.yTicks.appendChild(yTick);
+        }
         
-        // Create X-axis values
-        createXAxis(projections.length);
+        // Create X-axis ticks
+        for (let i = 0; i <= projections.length; i++) {
+            const xTick = document.createElement('div');
+            xTick.className = 'x-tick';
+            xTick.textContent = i === 0 ? 'Now' : i.toString();
+            elements.xTicks.appendChild(xTick);
+        }
         
-        // Calculate positions for current value (Year 0)
-        const currentY = chartHeight - ((currentRent - minValue) / valueRange * chartHeight);
+        // Create chart line
+        const chartLine = document.createElement('div');
+        chartLine.className = 'chart-line';
+        elements.rentTrendChart.appendChild(chartLine);
+        
+        // Add current point (Year 0)
         const currentX = 0;
-        addChartPoint(currentX, currentY, currentRent, 'Current', true);
+        const currentY = chartHeight - ((currentRent - minValue) / valueRange * chartHeight);
+        addChartPoint(currentX, currentY, currentRent, true);
         
-        // Calculate positions for projections
+        // Add projection points
+        const xStep = chartWidth / projections.length;
         projections.forEach((value, index) => {
-            const x = ((index + 1) / (projections.length + 1)) * chartWidth;
+            const x = xStep * (index + 1);
             const y = chartHeight - ((value - minValue) / valueRange * chartHeight);
-            addChartPoint(x, y, value, `Year ${index + 1}`);
+            addChartPoint(x, y, value);
         });
         
         // Connect points with lines
         connectChartPoints();
     }
 
-    function createYAxis(minValue, maxValue) {
-        const steps = 5;
-        const stepValue = (maxValue - minValue) / steps;
-        const chartHeight = 250;
-        
-        for (let i = 0; i <= steps; i++) {
-            const value = Math.round(minValue + (stepValue * i));
-            const yPos = chartHeight - (i * (chartHeight / steps));
-            
-            const yValue = document.createElement('div');
-            yValue.textContent = `$${value.toLocaleString()}`;
-            elements.yAxisValues.appendChild(yValue);
-            
-            // Add grid line
-            const gridLine = document.createElement('div');
-            gridLine.className = 'chart-grid-line';
-            gridLine.style.bottom = `${yPos}px`;
-            elements.rentTrendChart.querySelector('.chart-grid').appendChild(gridLine);
-        }
-    }
-
-    function createXAxis(years) {
-        for (let i = 0; i <= years; i++) {
-            const xValue = document.createElement('div');
-            xValue.textContent = i === 0 ? 'Now' : i;
-            elements.xAxisValues.appendChild(xValue);
-        }
-    }
-
-    function addChartPoint(x, y, value, label, isCurrent = false) {
+    function addChartPoint(x, y, value, isCurrent = false) {
         const point = document.createElement('div');
         point.className = `chart-point ${isCurrent ? 'current-point' : ''}`;
         point.style.left = `${x}px`;
@@ -230,20 +224,16 @@ document.addEventListener('DOMContentLoaded', function() {
         valueLabel.style.left = `${x}px`;
         valueLabel.style.bottom = `${y + 15}px`;
         elements.rentTrendChart.appendChild(valueLabel);
+        
+        return point;
     }
 
     function connectChartPoints() {
         const points = elements.rentTrendChart.querySelectorAll('.chart-point');
-        const pointsArray = Array.from(points);
         
-        // Sort points by their x-position
-        pointsArray.sort((a, b) => {
-            return parseFloat(a.style.left) - parseFloat(b.style.left);
-        });
-        
-        for (let i = 0; i < pointsArray.length - 1; i++) {
-            const start = pointsArray[i];
-            const end = pointsArray[i + 1];
+        for (let i = 0; i < points.length - 1; i++) {
+            const start = points[i];
+            const end = points[i + 1];
             
             const startX = parseFloat(start.style.left);
             const startY = parseFloat(start.style.bottom);
@@ -254,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
             
             const line = document.createElement('div');
-            line.className = 'chart-line';
+            line.className = 'chart-connector';
             line.style.width = `${length}px`;
             line.style.left = `${startX}px`;
             line.style.bottom = `${startY}px`;

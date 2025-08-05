@@ -377,86 +377,133 @@ header {
 }
 
 /* === Chart Styles === */
-/* [Previous CSS remains the same until .chart-container] */
+/* [Previous CSS remains the same until .result-metrics] */
 
+/* === Chart Styles === */
 .chart-container {
-    display: flex;
     margin-bottom: 1.5rem;
-    height: 350px;
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    position: relative;
-}
-
-.chart-y-axis {
-    width: 50px;
-    padding: 20px 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-right: 1px solid rgba(5, 217, 232, 0.3);
-}
-
-.y-axis-label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-.y-axis-values {
-    flex: 1;
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: space-between;
-    width: 100%;
-    text-align: right;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--neon-green);
-}
-
-.chart-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+    padding: 15px;
 }
 
 .chart-title {
     text-align: center;
     color: var(--neon-green);
     font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
 }
 
-.chart-graph {
+.chart-wrapper {
+    display: flex;
+    height: 300px;
+}
+
+.y-axis {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    margin-right: 10px;
+}
+
+.y-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-align: center;
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.y-ticks {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 15px 0;
+}
+
+.y-tick {
+    color: var(--neon-blue);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    position: relative;
+}
+
+.y-tick::after {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    width: 10px;
+    height: 1px;
+    background: rgba(5, 217, 232, 0.5);
+}
+
+.chart-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart {
     flex: 1;
     position: relative;
-    width: 100%;
-    height: 250px;
+    margin-bottom: 20px;
 }
 
-.chart-grid {
+.x-axis {
+    display: flex;
+    flex-direction: column;
+    height: 40px;
+}
+
+.x-ticks {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+}
+
+.x-tick {
+    color: var(--neon-blue);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    position: relative;
+    flex: 1;
+    text-align: center;
+}
+
+.x-tick::before {
+    content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background:
-        linear-gradient(to right, rgba(5, 217, 232, 0.1) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
-    background-size: 20% 25%;
+    top: -10px;
+    left: 50%;
+    width: 1px;
+    height: 10px;
+    background: rgba(5, 217, 232, 0.5);
+}
+
+.x-label {
+    text-align: center;
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
 }
 
 .chart-line {
     position: absolute;
-    height: 2px;
-    background: var(--neon-blue);
-    transform-origin: 0 0;
-    z-index: 1;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(5, 217, 232, 0.3);
 }
 
 .chart-point {
@@ -477,6 +524,14 @@ header {
     box-shadow: 0 0 12px var(--neon-green);
 }
 
+.chart-connector {
+    position: absolute;
+    height: 2px;
+    background: var(--neon-blue);
+    transform-origin: 0 0;
+    z-index: 1;
+}
+
 .chart-value-label {
     position: absolute;
     top: -25px;
@@ -485,33 +540,48 @@ header {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.8rem;
     color: var(--neon-green);
+    background: rgba(5, 1, 10, 0.8);
+    padding: 2px 5px;
+    border-radius: 3px;
     white-space: nowrap;
 }
 
-.chart-x-axis {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.x-axis-values {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--neon-green);
-    margin-bottom: 5px;
-}
-
-.x-axis-label {
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-}
-
 /* [Rest of the CSS remains the same] */
+
+.chart-tick {
+    position: absolute;
+    background: var(--neon-blue);
+}
+
+.chart-tick-y {
+    left: 0;
+    width: 5px;
+    height: 1px;
+}
+
+.chart-tick-x {
+    bottom: 0;
+    width: 1px;
+    height: 5px;
+}
+
+.chart-tick-label {
+    position: absolute;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--neon-blue);
+}
+
+.chart-tick-label-y {
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.chart-tick-label-x {
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
 /* === Result Details === */
 .result-details {
