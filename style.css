@@ -142,20 +142,6 @@ header {
     display: inline-block;
 }
 
-.header-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.result-grid {
-    grid-area: results;
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: 1fr 1fr;
-}
-
 /* === Terminal Styles === */
 .terminal {
     background-color: var(--terminal-bg);
@@ -338,22 +324,6 @@ header {
     left: 100%;
 }
 
-.mode-switcher {
-    background: transparent;
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
-    padding: 0.5rem 1rem;
-    font-family: 'Rajdhani', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.mode-switcher.active {
-    background: var(--neon-green);
-    color: var(--dark-bg);
-    font-weight: bold;
-}
-
 /* === Result Display === */
 .result-metrics {
     display: grid;
@@ -406,16 +376,15 @@ header {
     color: var(--text-secondary);
 }
 
-/* [Previous CSS remains the same until .result-chart] */
-
+/* === Chart Styles === */
 .result-chart-container {
     position: relative;
+    margin-bottom: 1.5rem;
     height: 300px;
-    margin-bottom: 2rem;
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    padding: 20px 40px 40px 60px;
+    padding: 20px;
 }
 
 .chart-title {
@@ -429,27 +398,25 @@ header {
     font-size: 1rem;
 }
 
-.chart-axis-label {
+.chart-labels-y {
     position: absolute;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.8rem;
-    color: var(--neon-blue);
-}
-
-.chart-axis-label.y-axis {
     left: 10px;
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);
-    width: 300px;
-    text-align: center;
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
 }
 
-.chart-axis-label.x-axis {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
+.chart-labels-x {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
     text-align: center;
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
 }
 
 .result-chart {
@@ -460,7 +427,7 @@ header {
 
 .chart-line {
     position: absolute;
-    bottom: 0;
+    bottom: 40px;
     left: 0;
     width: 100%;
     height: 1px;
@@ -495,25 +462,25 @@ header {
 
 .chart-label {
     position: absolute;
-    bottom: -25px;
+    bottom: 20px;
     transform: translateX(-50%);
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--neon-blue);
     white-space: nowrap;
 }
 
-.chart-year-marker {
+.chart-value-label {
     position: absolute;
-    bottom: -15px;
+    top: -25px;
+    left: 50%;
     transform: translateX(-50%);
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
+    font-size: 0.8rem;
+    color: var(--neon-green);
 }
 
-/* [Rest of previous CSS remains the same, remove .comparison-table styles] */
-
+/* === Result Details === */
 .result-details {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

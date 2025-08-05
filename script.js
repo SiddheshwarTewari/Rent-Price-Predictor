@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== STATE ==========
     const state = {
         selectedYears: 1,
+        comparisonData: [],
         lastUpdated: new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         locationInput: document.getElementById('location'),
         bedroomSelect: document.getElementById('bedrooms'),
         predictBtn: document.getElementById('predict-btn'),
+        compareBtn: document.getElementById('compare-btn'),
         timeButtons: document.querySelectorAll('.time-btn'),
         currentRentEl: document.getElementById('current-rent'),
         projectedChangeEl: document.getElementById('projected-change'),
@@ -23,9 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
         recommendationEl: document.getElementById('recommendation'),
         dataSourceEl: document.getElementById('data-source'),
         rentTrendChart: document.getElementById('rent-trend-chart'),
+        comparisonTable: document.getElementById('comparison-data'),
         currentTimeEl: document.getElementById('current-time'),
         apiStatusEl: document.getElementById('api-status'),
-        lastUpdatedEl: document.getElementById('last-updated')
+        lastUpdatedEl: document.getElementById('last-updated'),
+        tipsModal: document.getElementById('tips-modal'),
+        tipsBtn: document.getElementById('tips-btn'),
+        modalCloseBtn: document.querySelector('.modal-close')
     };
 
     // ========== INITIALIZATION ==========
@@ -73,7 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     trend: baseData.trend,
                     volatility: baseData.volatility,
                     projections,
-                    source: 'Census+MarketAdj'
+                    source: 'Census+MarketAdj',
+                    bedrooms
                 });
             }, 800);
         });
@@ -121,33 +128,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== DISPLAY FUNCTIONS ==========
     function displayResults(data) {
-        // Basic info
         elements.resultLocationEl.textContent = data.location;
         elements.currentRentEl.textContent = `$${data.current.toLocaleString()}`;
         elements.dataSourceEl.textContent = `DATA_SOURCE: ${data.source}`;
         
-        // Calculate metrics
         const projectedChange = data.projections[0] - data.current;
         const changePercentage = ((projectedChange / data.current) * 100).toFixed(1);
         elements.projectedChangeEl.textContent = 
             `${projectedChange >= 0 ? '+' : ''}$${projectedChange} (${changePercentage}%)`;
         
-        // Affordability gauge
         const affordabilityScore = calculateAffordabilityScore(data.current, data.trend);
         updateGauge(affordabilityScore);
         
-        // Market volatility
         elements.marketVolatilityEl.textContent = `${(data.volatility * 100).toFixed(1)}%`;
-        
-        // Recommendation
         elements.recommendationEl.textContent = generateRecommendation(data.current, data.trend);
         
-        // Update chart
         updateChart(data.current, data.projections);
+        addToComparisonData(data);
     }
 
     function updateChart(currentRent, projections) {
-        // Clear previous chart
         elements.rentTrendChart.innerHTML = '';
         
         // Create chart line
@@ -155,48 +155,59 @@ document.addEventListener('DOMContentLoaded', function() {
         chartLine.className = 'chart-line';
         elements.rentTrendChart.appendChild(chartLine);
         
-        // Calculate positions
+        // Calculate min/max for scaling
         const allValues = [currentRent, ...projections];
         const maxValue = Math.max(...allValues);
         const minValue = Math.min(...allValues);
-        const range = maxValue - minValue || 1;
+        const valueRange = maxValue - minValue || 1;
+        
+        // Chart dimensions
+        const chartHeight = 220;
+        const chartWidth = elements.rentTrendChart.offsetWidth;
+        const pointSpacing = chartWidth / (projections.length + 1);
         
         // Add current point (Year 0)
-        addChartPoint(0, currentRent, 'Current', minValue, range, true);
+        const currentX = pointSpacing * 0;
+        const currentY = chartHeight - ((currentRent - minValue) / valueRange * chartHeight);
+        addChartPoint(currentX, currentY, currentRent, 'Current', true);
         
         // Add projection points
         projections.forEach((value, index) => {
-            addChartPoint(index + 1, value, `Year ${index + 1}`, minValue, range);
+            const x = pointSpacing * (index + 1);
+            const y = chartHeight - ((value - minValue) / valueRange * chartHeight);
+            addChartPoint(x, y, value, `Year ${index + 1}`);
         });
         
         // Connect points with lines
         connectChartPoints();
         
-        // Add year markers on x-axis
-        addYearMarkers(projections.length);
+        // Add Y-axis markers
+        addYAxisMarkers(minValue, maxValue, chartHeight);
     }
 
-    function addChartPoint(yearIndex, value, label, minValue, range, isCurrent = false) {
+    function addChartPoint(x, y, value, label, isCurrent = false) {
         const point = document.createElement('div');
         point.className = `chart-point ${isCurrent ? 'current-point' : ''}`;
-        
-        // Position calculation
-        const xPos = (yearIndex / state.selectedYears) * 90 + 5;
-        const yPos = 100 - ((value - minValue) / range * 90); // 90% of height
-        
-        point.style.left = `${xPos}%`;
-        point.style.bottom = `${yPos}%`;
+        point.style.left = `${x}px`;
+        point.style.bottom = `${y}px`;
         elements.rentTrendChart.appendChild(point);
         
         // Add value label
-        const labelEl = document.createElement('div');
-        labelEl.className = 'chart-label';
-        labelEl.textContent = `$${value.toLocaleString()}`;
-        labelEl.style.left = `${xPos}%`;
-        labelEl.style.bottom = `${yPos + 20}%`;
-        elements.rentTrendChart.appendChild(labelEl);
+        const valueLabel = document.createElement('div');
+        valueLabel.className = 'chart-value-label';
+        valueLabel.textContent = `$${value.toLocaleString()}`;
+        valueLabel.style.left = `${x}px`;
+        valueLabel.style.bottom = `${y + 15}px`;
+        elements.rentTrendChart.appendChild(valueLabel);
         
-        return point;
+        // Add year label
+        if (!isCurrent) {
+            const yearLabel = document.createElement('div');
+            yearLabel.className = 'chart-label';
+            yearLabel.textContent = label.split(' ')[1];
+            yearLabel.style.left = `${x}px`;
+            elements.rentTrendChart.appendChild(yearLabel);
+        }
     }
 
     function connectChartPoints() {
@@ -207,34 +218,46 @@ document.addEventListener('DOMContentLoaded', function() {
             const end = points[i + 1];
             
             const startX = parseFloat(start.style.left);
-            const startY = 100 - parseFloat(start.style.bottom);
+            const startY = parseFloat(start.style.bottom);
             const endX = parseFloat(end.style.left);
-            const endY = 100 - parseFloat(end.style.bottom);
+            const endY = parseFloat(end.style.bottom);
             
             const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
             const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
             
             const line = document.createElement('div');
             line.className = 'chart-connector';
-            line.style.width = `${length}%`;
-            line.style.left = `${startX}%`;
-            line.style.top = `${startY}%`;
+            line.style.width = `${length}px`;
+            line.style.left = `${startX}px`;
+            line.style.bottom = `${startY}px`;
             line.style.transform = `rotate(${angle}deg)`;
+            line.style.transformOrigin = '0 0';
             
             elements.rentTrendChart.appendChild(line);
         }
     }
 
-    function addYearMarkers(years) {
-        for (let i = 0; i <= years; i++) {
+    function addYAxisMarkers(minValue, maxValue, chartHeight) {
+        const steps = 5;
+        const stepValue = (maxValue - minValue) / steps;
+        
+        for (let i = 0; i <= steps; i++) {
+            const value = Math.round(minValue + (stepValue * i));
+            const y = chartHeight - (i * (chartHeight / steps));
+            
             const marker = document.createElement('div');
-            marker.className = 'chart-year-marker';
-            
-            const xPos = (i / years) * 90 + 5;
-            marker.style.left = `${xPos}%`;
-            marker.textContent = i === 0 ? 'Now' : i;
-            
+            marker.className = 'chart-y-marker';
+            marker.style.left = '0';
+            marker.style.bottom = `${y}px`;
+            marker.textContent = `$${value.toLocaleString()}`;
             elements.rentTrendChart.appendChild(marker);
+            
+            const markerLine = document.createElement('div');
+            markerLine.className = 'chart-y-line';
+            markerLine.style.left = '0';
+            markerLine.style.bottom = `${y}px`;
+            markerLine.style.width = '100%';
+            elements.rentTrendChart.appendChild(markerLine);
         }
     }
 
@@ -270,6 +293,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Only 1.2 months of inventory available. ${getRandomConstructionStats()}.</p>
             `;
         }, 1000);
+    }
+
+    // ========== COMPARISON FUNCTIONS ==========
+    function addToComparisonData(data) {
+        const existingIndex = state.comparisonData.findIndex(item => 
+            item.location.toLowerCase() === data.location.toLowerCase()
+        );
+        
+        if (existingIndex >= 0) {
+            state.comparisonData[existingIndex] = data;
+        } else {
+            state.comparisonData.push(data);
+        }
+        
+        updateComparisonTable();
+    }
+
+    function updateComparisonTable() {
+        elements.comparisonTable.innerHTML = '';
+        
+        state.comparisonData.forEach(data => {
+            const row = document.createElement('tr');
+            
+            // Location cell
+            const locationCell = document.createElement('td');
+            locationCell.textContent = data.location;
+            row.appendChild(locationCell);
+            
+            // Current rent cell
+            const currentCell = document.createElement('td');
+            currentCell.textContent = `$${data.current.toLocaleString()}`;
+            row.appendChild(currentCell);
+            
+            // Projection cells (1YR, 3YR, 5YR)
+            [0, 2, 4].forEach(yearIndex => {
+                const projCell = document.createElement('td');
+                if (data.projections.length > yearIndex) {
+                    projCell.textContent = `$${data.projections[yearIndex].toLocaleString()}`;
+                } else {
+                    // Calculate if not available
+                    const projected = Math.round(data.current * Math.pow(data.trend, yearIndex + 1));
+                    projCell.textContent = `$${projected.toLocaleString()}`;
+                }
+                row.appendChild(projCell);
+            });
+            
+            elements.comparisonTable.appendChild(row);
+        });
     }
 
     // ========== UTILITY FUNCTIONS ==========
@@ -350,16 +421,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== EVENT HANDLERS ==========
     function setupEventListeners() {
-        // Main prediction button
         elements.predictBtn.addEventListener('click', predictRent);
         
-        // Time range buttons
+        elements.compareBtn.addEventListener('click', () => {
+            if (state.comparisonData.length < 2) {
+                showError('Analyze at least 2 locations to compare');
+            }
+        });
+        
         elements.timeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 elements.timeButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 state.selectedYears = parseInt(btn.dataset.years);
             });
+        });
+        
+        elements.tipsBtn.addEventListener('click', () => {
+            elements.tipsModal.classList.add('active');
+        });
+        
+        elements.modalCloseBtn.addEventListener('click', () => {
+            elements.tipsModal.classList.remove('active');
+        });
+        
+        elements.tipsModal.addEventListener('click', (e) => {
+            if (e.target === elements.tipsModal) {
+                elements.tipsModal.classList.remove('active');
+            }
         });
     }
 
