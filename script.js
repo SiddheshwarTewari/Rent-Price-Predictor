@@ -154,32 +154,35 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.rentTrendChart.innerHTML = '';
         elements.yTicks.innerHTML = '';
         elements.xTicks.innerHTML = '';
-        
+
         // Calculate min/max for scaling (always start from 0 for y-axis)
         const allValues = [currentRent, ...projections];
-        const maxValue = Math.max(...allValues);
-        const minValue = 0; // Always start from 0
-        const valueRange = maxValue - minValue || 1;
-        
-        // Chart dimensions
-        const chartHeight = elements.rentTrendChart.offsetHeight;
-        const chartWidth = elements.rentTrendChart.offsetWidth;
-        
+        let maxValue = Math.max(...allValues);
+        let minValue = 0; // Always start from 0
+        if (maxValue === minValue) maxValue += 1; // Prevent division by zero
+        const valueRange = maxValue - minValue;
+
+        // Chart dimensions (fallback to 300x300 if not rendered yet)
+        let chartHeight = elements.rentTrendChart.offsetHeight;
+        let chartWidth = elements.rentTrendChart.offsetWidth;
+        if (!chartHeight) chartHeight = 300;
+        if (!chartWidth) chartWidth = 300;
+
         // Create Y-axis ticks (5 steps)
-        const yStep = Math.ceil(maxValue / 5 / 100) * 100; // Round to nearest 100
-        for (let i = 0; i <= 5; i++) {
+        const yTicksCount = 5;
+        const yStep = Math.ceil(maxValue / yTicksCount / 100) * 100; // Round to nearest 100
+        for (let i = 0; i <= yTicksCount; i++) {
             const value = Math.round(yStep * i);
             if (value > maxValue * 1.1) continue; // Add 10% padding
-            
-            const yPos = chartHeight - ((value - minValue) / valueRange * chartHeight);
-            
+            // Invert y for browser coordinates
+            const yPos = ((value - minValue) / valueRange) * chartHeight;
             const yTick = document.createElement('div');
             yTick.className = 'y-tick';
             yTick.textContent = `$${value.toLocaleString()}`;
             yTick.style.bottom = `${yPos}px`;
             elements.yTicks.appendChild(yTick);
         }
-        
+
         // Create X-axis ticks (current year + projections)
         const totalYears = projections.length;
         for (let i = 0; i <= totalYears; i++) {
@@ -188,36 +191,50 @@ document.addEventListener('DOMContentLoaded', function() {
             xTick.textContent = i === 0 ? 'Now' : i.toString();
             elements.xTicks.appendChild(xTick);
         }
-        
-        // Create chart line
-        const chartLine = document.createElement('div');
-        chartLine.className = 'chart-line';
-        elements.rentTrendChart.appendChild(chartLine);
-        
+
+        // Gather all points for the line
+        const points = [];
+        const xStep = chartWidth / totalYears;
         // Add current point (Year 0)
         const currentX = 0;
         const currentY = chartHeight - ((currentRent - minValue) / valueRange * chartHeight);
-        addChartPoint(currentX, currentY, currentRent, true);
-        
+        points.push({ x: currentX, y: currentY, value: currentRent, isCurrent: true });
         // Add projection points
-        const xStep = chartWidth / totalYears;
         projections.forEach((value, index) => {
             const x = xStep * (index + 1);
             const y = chartHeight - ((value - minValue) / valueRange * chartHeight);
-            addChartPoint(x, y, value);
+            points.push({ x, y, value });
         });
-        
-        // Connect points with lines
-        connectChartPoints();
+
+        // Draw lines between points
+        for (let i = 0; i < points.length - 1; i++) {
+            const start = points[i];
+            const end = points[i + 1];
+            const length = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+            const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
+            const line = document.createElement('div');
+            line.className = 'chart-connector';
+            line.style.width = `${length}px`;
+            line.style.left = `${start.x}px`;
+            line.style.bottom = `${start.y}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            line.style.transformOrigin = '0 0';
+            elements.rentTrendChart.appendChild(line);
+        }
+
+        // Draw points and value labels
+        points.forEach(pt => {
+            addChartPoint(pt.x, pt.y, pt.value, pt.isCurrent);
+        });
     }
 
     function addChartPoint(x, y, value, isCurrent = false) {
         const point = document.createElement('div');
-        point.className = `chart-point ${isCurrent ? 'current-point' : ''}`;
+        point.className = `chart-point${isCurrent ? ' current-point' : ''}`;
         point.style.left = `${x}px`;
         point.style.bottom = `${y}px`;
         elements.rentTrendChart.appendChild(point);
-        
+
         // Add value label
         const valueLabel = document.createElement('div');
         valueLabel.className = 'chart-value-label';
@@ -225,36 +242,11 @@ document.addEventListener('DOMContentLoaded', function() {
         valueLabel.style.left = `${x}px`;
         valueLabel.style.bottom = `${y + 15}px`;
         elements.rentTrendChart.appendChild(valueLabel);
-        
+
         return point;
     }
 
-    function connectChartPoints() {
-        const points = elements.rentTrendChart.querySelectorAll('.chart-point');
-        
-        for (let i = 0; i < points.length - 1; i++) {
-            const start = points[i];
-            const end = points[i + 1];
-            
-            const startX = parseFloat(start.style.left);
-            const startY = parseFloat(start.style.bottom);
-            const endX = parseFloat(end.style.left);
-            const endY = parseFloat(end.style.bottom);
-            
-            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
-            
-            const line = document.createElement('div');
-            line.className = 'chart-connector';
-            line.style.width = `${length}px`;
-            line.style.left = `${startX}px`;
-            line.style.bottom = `${startY}px`;
-            line.style.transform = `rotate(${angle}deg)`;
-            line.style.transformOrigin = '0 0';
-            
-            elements.rentTrendChart.appendChild(line);
-        }
-    }
+    // connectChartPoints is now handled inside updateChart for correct order and coordinates
 
     function updateGauge(score) {
         elements.affordabilityGauge.style.width = `${score}%`;
