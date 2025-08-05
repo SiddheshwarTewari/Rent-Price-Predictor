@@ -155,10 +155,10 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.yTicks.innerHTML = '';
         elements.xTicks.innerHTML = '';
         
-        // Calculate min/max for scaling
+        // Calculate min/max for scaling (always start from 0 for y-axis)
         const allValues = [currentRent, ...projections];
         const maxValue = Math.max(...allValues);
-        const minValue = Math.min(...allValues);
+        const minValue = 0; // Always start from 0
         const valueRange = maxValue - minValue || 1;
         
         // Chart dimensions
@@ -166,10 +166,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartWidth = elements.rentTrendChart.offsetWidth;
         
         // Create Y-axis ticks (5 steps)
-        const yStep = Math.ceil(valueRange / 5 / 100) * 100; // Round to nearest 100
+        const yStep = Math.ceil(maxValue / 5 / 100) * 100; // Round to nearest 100
         for (let i = 0; i <= 5; i++) {
-            const value = Math.round(minValue + (yStep * i));
-            if (value > maxValue) continue;
+            const value = Math.round(yStep * i);
+            if (value > maxValue * 1.1) continue; // Add 10% padding
             
             const yPos = chartHeight - ((value - minValue) / valueRange * chartHeight);
             
@@ -180,8 +180,9 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.yTicks.appendChild(yTick);
         }
         
-        // Create X-axis ticks
-        for (let i = 0; i <= projections.length; i++) {
+        // Create X-axis ticks (current year + projections)
+        const totalYears = projections.length;
+        for (let i = 0; i <= totalYears; i++) {
             const xTick = document.createElement('div');
             xTick.className = 'x-tick';
             xTick.textContent = i === 0 ? 'Now' : i.toString();
@@ -199,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addChartPoint(currentX, currentY, currentRent, true);
         
         // Add projection points
-        const xStep = chartWidth / projections.length;
+        const xStep = chartWidth / totalYears;
         projections.forEach((value, index) => {
             const x = xStep * (index + 1);
             const y = chartHeight - ((value - minValue) / valueRange * chartHeight);
