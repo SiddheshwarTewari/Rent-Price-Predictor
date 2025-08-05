@@ -3,130 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeonStock // Market Data</title>
+    <title>Neo-Rent CyberOracle</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="terminal">
-        <div class="terminal-header">
-            <div class="terminal-buttons">
-                <span class="terminal-btn red"></span>
-                <span class="terminal-btn yellow"></span>
-                <span class="terminal-btn green"></span>
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+    <div class="glow-overlay"></div>
+    <div class="particles"></div>
+    
+    <div class="container">
+        <header>
+            <div class="header-glitch">
+                <h1 class="glitch" data-text="NEO-RENT CYBERORACLE">NEO-RENT CYBERORACLE</h1>
             </div>
-            <div class="terminal-title">NEONSTOCK v2.5</div>
-        </div>
-        <div class="terminal-body">
-            <div class="scanlines"></div>
-            <div class="content">
-                <h1 class="glow">// STOCK DATA INTERFACE</h1>
-                <div class="input-container">
-                    <input type="text" id="tickerInput" placeholder="ENTER TICKER SYMBOL (e.g. AAPL)" autocomplete="off">
-                    <button id="searchBtn"><i class="fas fa-arrow-right"></i></button>
+            <p class="subtitle">// ADVANCED URBAN COST PROJECTION SYSTEM //</p>
+        </header>
+        
+        <main class="app-container">
+            <div class="terminal main-terminal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-btn red"></span>
+                        <span class="terminal-btn yellow"></span>
+                        <span class="terminal-btn green"></span>
+                    </div>
+                    <span class="terminal-title">MAIN_CONTROL.EXE</span>
+                    <span class="terminal-time" id="current-time">--:--:--</span>
                 </div>
                 
-                <div id="loading" class="hidden">
-                    <div class="spinner"></div>
-                    <p>ACCESSING MARKET DATABASE...</p>
-                </div>
-                
-                <div id="error" class="hidden error-message">
-                    <p>ERROR: DATA RETRIEVAL FAILED</p>
-                    <p>PLEASE VERIFY TICKER SYMBOL AND TRY AGAIN</p>
-                </div>
-                
-                <div id="stockInfo" class="hidden">
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h2>COMPANY</h2>
-                            <p id="companyName">-</p>
+                <div class="terminal-body">
+                    <div class="input-section">
+                        <div class="input-row">
+                            <label for="location" class="input-label">TARGET LOCATION:</label>
+                            <input type="text" id="location" class="cyber-input" placeholder="Enter state/city">
                         </div>
-                        <div class="info-card">
-                            <h2>SYMBOL</h2>
-                            <p id="symbol">-</p>
+                        <div class="input-row">
+                            <label for="bedrooms" class="input-label">DWELLING TYPE:</label>
+                            <select id="bedrooms" class="cyber-select">
+                                <option value="1">1-Bedroom</option>
+                                <option value="2">2-Bedroom</option>
+                                <option value="3">3-Bedroom</option>
+                                <option value="studio">Studio</option>
+                                <option value="house">Single-Family Home</option>
+                            </select>
                         </div>
-                        <div class="info-card">
-                            <h2>PRICE</h2>
-                            <p id="price" class="price">-</p>
-                        </div>
-                        <div class="info-card">
-                            <h2>CHANGE</h2>
-                            <p id="change">-</p>
-                        </div>
-                        <div class="info-card">
-                            <h2>CHANGE %</h2>
-                            <p id="changePercent">-</p>
-                        </div>
-                        <div class="info-card">
-                            <h2>MARKET CAP</h2>
-                            <p id="marketCap">-</p>
+                        <div class="input-row">
+                            <label class="input-label">TIME RANGE:</label>
+                            <div class="time-toggle">
+                                <button class="time-btn active" data-years="1">1YR</button>
+                                <button class="time-btn" data-years="3">3YR</button>
+                                <button class="time-btn" data-years="5">5YR</button>
+                                <button class="time-btn" data-years="10">10YR</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="additional-data">
-                        <div class="data-column">
-                            <h3>TRADING DATA</h3>
-                            <p>PREV CLOSE: <span id="prevClose">-</span></p>
-                            <p>OPEN: <span id="open">-</span></p>
-                            <p>DAY RANGE: <span id="dayRange">-</span></p>
-                            <p>52WK RANGE: <span id="yearRange">-</span></p>
-                        </div>
-                        <div class="data-column">
-                            <h3>FINANCIAL METRICS</h3>
-                            <p>PE RATIO: <span id="peRatio">-</span></p>
-                            <p>EPS: <span id="eps">-</span></p>
-                            <p>DIVIDEND: <span id="dividend">-</span></p>
-                            <p>BETA: <span id="beta">-</span></p>
-                        </div>
+                    <div class="action-row">
+                        <button id="predict-btn" class="cyber-button large">ANALYZE MARKET</button>
+                        <button id="compare-btn" class="cyber-button secondary">COMPARE LOCATIONS</button>
                     </div>
-                    
-                    <div class="additional-data">
-                        <div class="data-column">
-                            <h3>ANALYST RECOMMENDATIONS</h3>
-                            <div id="recommendations"></div>
-                        </div>
-                        <div class="data-column">
-                            <h3>COMPANY PEERS</h3>
-                            <div id="peers" class="peers-container"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="data-column full-width">
-                        <h3>RENT TREND</h3>
-                        <div class="time-periods">
-                            <button class="time-btn active" data-years="3">3 Years</button>
-                            <button class="time-btn" data-years="5">5 Years</button>
-                            <button class="time-btn" data-years="10">10 Years</button>
-                        </div>
-                        <canvas id="rentChart"></canvas>
-                    </div>
-                    
-                    <div class="data-column full-width">
-                        <h3>UPCOMING EARNINGS</h3>
-                        <div id="earningsCalendar"></div>
-                    </div>
-                </div>
-                
-                <div id="newsContainer" class="hidden">
-                    <h2>LATEST NEWS</h2>
-                    <div id="newsFeed"></div>
-                </div>
-                
-                <div class="recent-searches">
-                    <h3>RECENT QUERIES</h3>
-                    <div id="recentTickers"></div>
                 </div>
             </div>
-        </div>
-        <div class="terminal-footer">
-            <span class="blink">SYSTEM READY</span>
-            <span id="datetime"></span>
-        </div>
+            
+            <div class="result-grid">
+                <div class="terminal result-terminal" id="primary-result">
+                    <div class="terminal-header">
+                        <span class="terminal-title">PRIMARY_RESULTS</span>
+                        <span class="terminal-status" id="data-source"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="result-display">
+                            <div class="result-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">CURRENT MEDIAN</span>
+                                    <span class="metric-value" id="current-rent">--</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">PROJECTED CHANGE</span>
+                                    <span class="metric-value" id="projected-change">--</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">AFFORDABILITY INDEX</span>
+                                    <div class="gauge" id="affordability-gauge">
+                                        <div class="gauge-fill"></div>
+                                        <div class="gauge-labels">
+                                            <span>Low</span>
+                                            <span>High</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">RENT TREND PROJECTION</div>
+                                <div class="chart-wrapper">
+                                    <div class="y-axis">
+                                        <div class="y-label">RENT ($)</div>
+                                        <div class="y-ticks" id="y-ticks"></div>
+                                    </div>
+                                    <div class="chart-area">
+                                        <div class="chart" id="rent-trend-chart"></div>
+                                        <div class="x-axis">
+                                            <div class="x-ticks" id="x-ticks"></div>
+                                            <div class="x-label">YEARS</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="result-details">
+                                <div class="detail">
+                                    <span class="detail-label">LOCATION:</span>
+                                    <span class="detail-value" id="result-location">--</span>
+                                </div>
+                                <div class="detail">
+                                    <span class="detail-label">MARKET VOLATILITY:</span>
+                                    <span class="detail-value" id="market-volatility">--</span>
+                                </div>
+                                <div class="detail">
+                                    <span class="detail-label">RECOMMENDATION:</span>
+                                    <span class="detail-value" id="recommendation">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="terminal secondary-terminal" id="comparison-results">
+                    <div class="terminal-header">
+                        <span class="terminal-title">COMPARISON_DATA</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="comparison-display">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Current</th>
+                                        <th>1YR</th>
+                                        <th>3YR</th>
+                                        <th>5YR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparison-data">
+                                    <!-- Comparison data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="terminal data-terminal">
+                <div class="terminal-header">
+                    <span class="terminal-title">MARKET_INSIGHTS</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="insights-container">
+                        <div class="insight" id="employment-insight">
+                            <h3>EMPLOYMENT TRENDS</h3>
+                            <p>Loading regional job market data...</p>
+                        </div>
+                        <div class="insight" id="migration-insight">
+                            <h3>POPULATION FLOW</h3>
+                            <p>Analyzing migration patterns...</p>
+                        </div>
+                        <div class="insight" id="construction-insight">
+                            <h3>HOUSING SUPPLY</h3>
+                            <p>Evaluating new construction...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>SYSTEM STATUS</h3>
+                    <div class="status-indicators">
+                        <span class="status active">DATA_FEED: ONLINE</span>
+                        <span class="status active">ANALYTICS: ACTIVE</span>
+                        <span class="status" id="api-status">CENSUS_API: CHECKING...</span>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>VERSION INFO</h3>
+                    <p>NEO-RENT CORE v5.2.1</p>
+                    <p>LAST UPDATED: <span id="last-updated">--</span></p>
+                </div>
+                <div class="footer-section">
+                    <h3>QUICK LINKS</h3>
+                    <button class="footer-btn" id="save-btn">SAVE REPORT</button>
+                    <button class="footer-btn" id="tips-btn">TIPS</button>
+                </div>
+            </div>
+            <p class="copyright">© 2077 QUANTUM ANALYTICS | UNAUTHORIZED ACCESS PROHIBITED</p>
+        </footer>
     </div>
     
+    <div class="modal hidden" id="tips-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>USER TIPS</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tip">
+                    <h3>LOCATION FORMAT</h3>
+                    <p>Enter state abbreviations (CA) or full names (California). City-level data available for major metros.</p>
+                </div>
+                <div class="tip">
+                    <h3>COMPARISON MODE</h3>
+                    <p>Click "COMPARE LOCATIONS" to analyze multiple areas side-by-side.</p>
+                </div>
+                <div class="tip">
+                    <h3>TIME RANGES</h3>
+                    <p>Select different time ranges (1-10 years) to see long-term projections.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
