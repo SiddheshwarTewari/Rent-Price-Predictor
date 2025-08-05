@@ -256,21 +256,37 @@ header {
     gap: 0.5rem;
 }
 
-.time-btn {
-    background: rgba(5, 1, 10, 0.7);
-    border: 1px solid var(--neon-blue);
-    color: var(--text-color);
-    padding: 0.5rem 1rem;
-    font-family: 'Rajdhani', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s;
+/* new */
+.time-periods {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-.time-btn.active {
-    background: var(--neon-blue);
-    color: var(--dark-bg);
-    font-weight: bold;
+.time-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
 }
+
+.time-btn:hover, .time-btn.active {
+    background: var(--neon-blue);
+    color: var(--darker-bg);
+    box-shadow: 0 0 10px rgba(0, 255, 252, 0.5);
+}
+
+#rentChart {
+    width: 100%;
+    height: 300px;
+    margin-top: 15px;
+}
+/* new */
 
 /* === Button Styles === */
 .cyber-button {
