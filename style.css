@@ -377,71 +377,86 @@ header {
 }
 
 /* === Chart Styles === */
-/* === Chart Styles === */
-.result-chart-container {
-    position: relative;
+/* [Previous CSS remains the same until .chart-container] */
+
+.chart-container {
+    display: flex;
     margin-bottom: 1.5rem;
-    height: 300px;
+    height: 350px;
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    padding: 20px 40px 40px 60px; /* More padding for axes */
+    position: relative;
+}
+
+.chart-y-axis {
+    width: 50px;
+    padding: 20px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid rgba(5, 217, 232, 0.3);
+}
+
+.y-axis-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.y-axis-values {
+    flex: 1;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    width: 100%;
+    text-align: right;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--neon-green);
+}
+
+.chart-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
 }
 
 .chart-title {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    width: 100%;
     text-align: center;
     color: var(--neon-green);
     font-family: 'Orbitron', sans-serif;
     font-size: 1rem;
+    margin-bottom: 10px;
 }
 
-.chart-axis-y {
+.chart-graph {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 250px;
+}
+
+.chart-grid {
     position: absolute;
-    left: 20px;
-    top: 40px;
-    bottom: 40px;
-    width: 1px;
-    background: var(--neon-blue);
-}
-
-.chart-axis-x {
-    position: absolute;
-    left: 60px;
-    right: 20px;
-    bottom: 40px;
-    height: 1px;
-    background: var(--neon-blue);
-}
-
-.chart-axis-label-y {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%) rotate(-90deg);
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-    white-space: nowrap;
-}
-
-.chart-axis-label-x {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--neon-blue);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-}
-
-.result-chart {
     width: 100%;
     height: 100%;
-    position: relative;
+    background:
+        linear-gradient(to right, rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
+    background-size: 20% 25%;
+}
+
+.chart-line {
+    position: absolute;
+    height: 2px;
+    background: var(--neon-blue);
+    transform-origin: 0 0;
+    z-index: 1;
 }
 
 .chart-point {
@@ -462,14 +477,6 @@ header {
     box-shadow: 0 0 12px var(--neon-green);
 }
 
-.chart-connector {
-    position: absolute;
-    height: 2px;
-    background: var(--neon-blue);
-    transform-origin: left center;
-    z-index: 1;
-}
-
 .chart-value-label {
     position: absolute;
     top: -25px;
@@ -478,42 +485,33 @@ header {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.8rem;
     color: var(--neon-green);
+    white-space: nowrap;
 }
 
-.chart-tick {
-    position: absolute;
-    background: var(--neon-blue);
+.chart-x-axis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
 }
 
-.chart-tick-y {
-    left: 0;
-    width: 5px;
-    height: 1px;
-}
-
-.chart-tick-x {
-    bottom: 0;
-    width: 1px;
-    height: 5px;
-}
-
-.chart-tick-label {
-    position: absolute;
+.x-axis-values {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    margin-bottom: 5px;
+}
+
+.x-axis-label {
     color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
 }
 
-.chart-tick-label-y {
-    left: 10px;
-    transform: translateY(-50%);
-}
-
-.chart-tick-label-x {
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
+/* [Rest of the CSS remains the same] */
 
 /* === Result Details === */
 .result-details {
