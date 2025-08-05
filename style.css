@@ -377,6 +377,7 @@ header {
 }
 
 /* === Chart Styles === */
+/* === Chart Styles === */
 .result-chart-container {
     position: relative;
     margin-bottom: 1.5rem;
@@ -384,7 +385,7 @@ header {
     background: rgba(5, 1, 10, 0.5);
     border: 1px solid var(--neon-blue);
     border-radius: 5px;
-    padding: 20px;
+    padding: 20px 40px 40px 60px; /* More padding for axes */
 }
 
 .chart-title {
@@ -398,7 +399,25 @@ header {
     font-size: 1rem;
 }
 
-.chart-labels-y {
+.chart-axis-y {
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 40px;
+    width: 1px;
+    background: var(--neon-blue);
+}
+
+.chart-axis-x {
+    position: absolute;
+    left: 60px;
+    right: 20px;
+    bottom: 40px;
+    height: 1px;
+    background: var(--neon-blue);
+}
+
+.chart-axis-label-y {
     position: absolute;
     left: 10px;
     top: 50%;
@@ -406,14 +425,14 @@ header {
     color: var(--neon-blue);
     font-family: 'Rajdhani', sans-serif;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
-.chart-labels-x {
+.chart-axis-label-x {
     position: absolute;
-    bottom: 5px;
-    left: 0;
-    width: 100%;
-    text-align: center;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     color: var(--neon-blue);
     font-family: 'Rajdhani', sans-serif;
     font-size: 0.9rem;
@@ -423,15 +442,6 @@ header {
     width: 100%;
     height: 100%;
     position: relative;
-}
-
-.chart-line {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: rgba(5, 217, 232, 0.3);
 }
 
 .chart-point {
@@ -456,18 +466,8 @@ header {
     position: absolute;
     height: 2px;
     background: var(--neon-blue);
-    transform-origin: 0 0;
+    transform-origin: left center;
     z-index: 1;
-}
-
-.chart-label {
-    position: absolute;
-    bottom: 20px;
-    transform: translateX(-50%);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.9rem;
-    color: var(--neon-blue);
-    white-space: nowrap;
 }
 
 .chart-value-label {
@@ -478,6 +478,41 @@ header {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.8rem;
     color: var(--neon-green);
+}
+
+.chart-tick {
+    position: absolute;
+    background: var(--neon-blue);
+}
+
+.chart-tick-y {
+    left: 0;
+    width: 5px;
+    height: 1px;
+}
+
+.chart-tick-x {
+    bottom: 0;
+    width: 1px;
+    height: 5px;
+}
+
+.chart-tick-label {
+    position: absolute;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--neon-blue);
+}
+
+.chart-tick-label-y {
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.chart-tick-label-x {
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* === Result Details === */

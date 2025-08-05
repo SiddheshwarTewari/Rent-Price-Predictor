@@ -150,10 +150,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateChart(currentRent, projections) {
         elements.rentTrendChart.innerHTML = '';
         
-        // Create chart line
-        const chartLine = document.createElement('div');
-        chartLine.className = 'chart-line';
-        elements.rentTrendChart.appendChild(chartLine);
+        // Create axes
+        const axisY = document.createElement('div');
+        axisY.className = 'chart-axis-y';
+        elements.rentTrendChart.appendChild(axisY);
+        
+        const axisX = document.createElement('div');
+        axisX.className = 'chart-axis-x';
+        elements.rentTrendChart.appendChild(axisX);
+        
+        // Add axis labels
+        const labelY = document.createElement('div');
+        labelY.className = 'chart-axis-label-y';
+        labelY.textContent = 'RENT PRICE ($)';
+        elements.rentTrendChart.appendChild(labelY);
+        
+        const labelX = document.createElement('div');
+        labelX.className = 'chart-axis-label-x';
+        labelX.textContent = 'YEARS';
+        elements.rentTrendChart.appendChild(labelX);
         
         // Calculate min/max for scaling
         const allValues = [currentRent, ...projections];
@@ -162,34 +177,69 @@ document.addEventListener('DOMContentLoaded', function() {
         const valueRange = maxValue - minValue || 1;
         
         // Chart dimensions
-        const chartHeight = 220;
-        const chartWidth = elements.rentTrendChart.offsetWidth;
-        const pointSpacing = chartWidth / (projections.length + 1);
+        const chartHeight = elements.rentTrendChart.offsetHeight - 40; // Account for padding
+        const chartWidth = elements.rentTrendChart.offsetWidth - 80; // Account for padding
+        
+        // Add Y-axis ticks and labels
+        const yTicks = 5;
+        for (let i = 0; i <= yTicks; i++) {
+            const value = Math.round(minValue + (i/yTicks) * valueRange);
+            const yPos = chartHeight - (i/yTicks) * chartHeight;
+            
+            const tick = document.createElement('div');
+            tick.className = 'chart-tick chart-tick-y';
+            tick.style.left = '0';
+            tick.style.top = `${yPos}px`;
+            elements.rentTrendChart.appendChild(tick);
+            
+            const tickLabel = document.createElement('div');
+            tickLabel.className = 'chart-tick-label chart-tick-label-y';
+            tickLabel.textContent = `$${value.toLocaleString()}`;
+            tickLabel.style.top = `${yPos}px`;
+            elements.rentTrendChart.appendChild(tickLabel);
+        }
+        
+        // Add points and X-axis ticks
+        const totalPoints = projections.length + 1;
+        projections.forEach((value, index) => {
+            const xPos = ((index + 1) / totalPoints) * chartWidth;
+            const yPos = chartHeight - ((value - minValue) / valueRange * chartHeight);
+            
+            // Add X-axis tick
+            const tick = document.createElement('div');
+            tick.className = 'chart-tick chart-tick-x';
+            tick.style.left = `${xPos}px`;
+            elements.rentTrendChart.appendChild(tick);
+            
+            // Add X-axis label
+            const tickLabel = document.createElement('div');
+            tickLabel.className = 'chart-tick-label chart-tick-label-x';
+            tickLabel.textContent = `${index + 1}`;
+            tickLabel.style.left = `${xPos}px`;
+            elements.rentTrendChart.appendChild(tickLabel);
+        });
         
         // Add current point (Year 0)
-        const currentX = pointSpacing * 0;
+        const currentX = 0;
         const currentY = chartHeight - ((currentRent - minValue) / valueRange * chartHeight);
         addChartPoint(currentX, currentY, currentRent, 'Current', true);
         
         // Add projection points
         projections.forEach((value, index) => {
-            const x = pointSpacing * (index + 1);
+            const x = ((index + 1) / totalPoints) * chartWidth;
             const y = chartHeight - ((value - minValue) / valueRange * chartHeight);
             addChartPoint(x, y, value, `Year ${index + 1}`);
         });
         
         // Connect points with lines
         connectChartPoints();
-        
-        // Add Y-axis markers
-        addYAxisMarkers(minValue, maxValue, chartHeight);
     }
 
     function addChartPoint(x, y, value, label, isCurrent = false) {
         const point = document.createElement('div');
         point.className = `chart-point ${isCurrent ? 'current-point' : ''}`;
         point.style.left = `${x}px`;
-        point.style.bottom = `${y}px`;
+        point.style.top = `${y}px`;
         elements.rentTrendChart.appendChild(point);
         
         // Add value label
@@ -197,102 +247,35 @@ document.addEventListener('DOMContentLoaded', function() {
         valueLabel.className = 'chart-value-label';
         valueLabel.textContent = `$${value.toLocaleString()}`;
         valueLabel.style.left = `${x}px`;
-        valueLabel.style.bottom = `${y + 15}px`;
+        valueLabel.style.top = `${y - 20}px`;
         elements.rentTrendChart.appendChild(valueLabel);
-        
-        // Add year label
-        if (!isCurrent) {
-            const yearLabel = document.createElement('div');
-            yearLabel.className = 'chart-label';
-            yearLabel.textContent = label.split(' ')[1];
-            yearLabel.style.left = `${x}px`;
-            elements.rentTrendChart.appendChild(yearLabel);
-        }
     }
 
     function connectChartPoints() {
         const points = elements.rentTrendChart.querySelectorAll('.chart-point');
+        let prevPoint = null;
         
-        for (let i = 0; i < points.length - 1; i++) {
-            const start = points[i];
-            const end = points[i + 1];
-            
-            const startX = parseFloat(start.style.left);
-            const startY = parseFloat(start.style.bottom);
-            const endX = parseFloat(end.style.left);
-            const endY = parseFloat(end.style.bottom);
-            
-            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
-            
-            const line = document.createElement('div');
-            line.className = 'chart-connector';
-            line.style.width = `${length}px`;
-            line.style.left = `${startX}px`;
-            line.style.bottom = `${startY}px`;
-            line.style.transform = `rotate(${angle}deg)`;
-            line.style.transformOrigin = '0 0';
-            
-            elements.rentTrendChart.appendChild(line);
-        }
-    }
-
-    function addYAxisMarkers(minValue, maxValue, chartHeight) {
-        const steps = 5;
-        const stepValue = (maxValue - minValue) / steps;
-        
-        for (let i = 0; i <= steps; i++) {
-            const value = Math.round(minValue + (stepValue * i));
-            const y = chartHeight - (i * (chartHeight / steps));
-            
-            const marker = document.createElement('div');
-            marker.className = 'chart-y-marker';
-            marker.style.left = '0';
-            marker.style.bottom = `${y}px`;
-            marker.textContent = `$${value.toLocaleString()}`;
-            elements.rentTrendChart.appendChild(marker);
-            
-            const markerLine = document.createElement('div');
-            markerLine.className = 'chart-y-line';
-            markerLine.style.left = '0';
-            markerLine.style.bottom = `${y}px`;
-            markerLine.style.width = '100%';
-            elements.rentTrendChart.appendChild(markerLine);
-        }
-    }
-
-    function updateGauge(score) {
-        elements.affordabilityGauge.style.width = `${score}%`;
-        
-        if (score > 70) {
-            elements.affordabilityGauge.style.background = 
-                'linear-gradient(90deg, var(--neon-pink), var(--neon-purple))';
-        } else if (score > 30) {
-            elements.affordabilityGauge.style.background = 
-                'linear-gradient(90deg, var(--neon-yellow), var(--neon-pink))';
-        } else {
-            elements.affordabilityGauge.style.background = 
-                'linear-gradient(90deg, var(--neon-green), var(--neon-blue))';
-        }
-    }
-
-    function generateInsights(location) {
-        setTimeout(() => {
-            document.getElementById('employment-insight').innerHTML = `
-                <h3>EMPLOYMENT TRENDS</h3>
-                <p>Tech sector growth driving demand in ${location}. Unemployment at 3.8%, below national average.</p>
-            `;
-            
-            document.getElementById('migration-insight').innerHTML = `
-                <h3>POPULATION FLOW</h3>
-                <p>Net migration +2.4% last year. Primary sources: ${getRandomCities(3)}.</p>
-            `;
-            
-            document.getElementById('construction-insight').innerHTML = `
-                <h3>HOUSING SUPPLY</h3>
-                <p>Only 1.2 months of inventory available. ${getRandomConstructionStats()}.</p>
-            `;
-        }, 1000);
+        points.forEach(point => {
+            if (prevPoint) {
+                const startX = parseFloat(prevPoint.style.left);
+                const startY = parseFloat(prevPoint.style.top);
+                const endX = parseFloat(point.style.left);
+                const endY = parseFloat(point.style.top);
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                const line = document.createElement('div');
+                line.className = 'chart-connector';
+                line.style.width = `${length}px`;
+                line.style.left = `${startX}px`;
+                line.style.top = `${startY}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                
+                elements.rentTrendChart.insertBefore(line, point);
+            }
+            prevPoint = point;
+        });
     }
 
     // ========== COMPARISON FUNCTIONS ==========
